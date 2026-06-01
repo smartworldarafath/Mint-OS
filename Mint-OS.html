@@ -1,0 +1,1826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>macOS 26</title>
+<style>
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/sf-pro-display@5.0.1/400.min.css');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/sf-pro-display@5.0.1/500.min.css');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/sf-pro-display@5.0.1/600.min.css');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/sf-pro-display@5.0.1/700.min.css');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/sf-mono@5.0.1/400.min.css');
+*{margin:0;padding:0;box-sizing:border-box;user-select:none;-webkit-user-select:none;font-family:'SF Pro Display',-apple-system,BlinkMacSystemFont,sans-serif}
+html,body{width:100%;height:100%;overflow:hidden;background:#000}
+#desktop{position:relative;width:100%;height:100%;overflow:hidden}
+#desktop-wallpaper{position:absolute;inset:0;background:linear-gradient(135deg,#0a0a1a,#1a1a3e,#0f2460,#432878,#7a2888,#c23858);transition:background .8s}
+#menubar{position:fixed;top:0;left:0;right:0;height:24px;z-index:10000;background:rgba(20,20,20,.42);backdrop-filter:blur(60px) saturate(220%) brightness(1.08);display:flex;align-items:center;padding:0 7px;border-bottom:.5px solid rgba(255,255,255,.06)}
+.ml{display:flex;align-items:center}
+.mr{display:flex;align-items:center;margin-left:auto;gap:2px}
+.mi{color:rgba(255,255,255,.85);font-size:13px;padding:1px 7px;border-radius:4px;cursor:default;position:relative;font-weight:500;line-height:20px;white-space:nowrap}
+.mi:hover{background:rgba(255,255,255,.1);color:#fff}
+.mi.apple{font-size:14px;padding:1px 9px}
+.mi.appname{font-weight:700;color:#fff}
+.mr .mi{padding:1px 4px;font-size:12px;display:flex;align-items:center;gap:3px}
+.mr .mi svg{width:14px;height:14px}
+.dd{position:absolute;top:22px;left:0;min-width:220px;background:rgba(25,25,25,.82);backdrop-filter:blur(60px) saturate(200%);border:.5px solid rgba(255,255,255,.1);border-radius:8px;padding:4px;display:none;z-index:10001;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.dd.show{display:block;animation:ddIn .15s cubic-bezier(.16,1,.3,1) both}
+@keyframes ddIn{from{opacity:0;transform:translateY(-3px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.di-i{padding:4px 12px;color:rgba(255,255,255,.9);font-size:13px;cursor:default;display:flex;justify-content:space-between;align-items:center;border-radius:4px}
+.di-i:hover{background:#0a84ff;color:#fff}
+.ds{height:.5px;background:rgba(255,255,255,.08);margin:4px 8px}
+.dsc{color:rgba(255,255,255,.35);font-size:12px}
+#dock{position:fixed;bottom:5px;left:50%;transform:translateX(-50%);background:rgba(20,20,20,.3);backdrop-filter:blur(50px) saturate(200%);border:.5px solid rgba(255,255,255,.08);border-radius:20px;padding:4px 6px;display:flex;align-items:flex-end;gap:1px;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,.3)}
+.di{width:48px;height:48px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .25s cubic-bezier(.2,.8,.2,1);position:relative}
+.di:hover{transform:translateY(-16px) scale(1.4);margin:0 7px;z-index:5}
+.di:hover .dtip{opacity:1;transform:translateX(-50%) translateY(-4px)}
+.di img{width:44px;height:44px;border-radius:11px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.3));object-fit:cover}
+.dtip{position:absolute;top:-30px;left:50%;transform:translateX(-50%) translateY(3px);background:rgba(20,20,20,.88);color:#fff;padding:4px 10px;border-radius:6px;font-size:12px;white-space:nowrap;opacity:0;transition:all .15s;pointer-events:none;border:.5px solid rgba(255,255,255,.1)}
+.ddot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.7);position:absolute;bottom:-2px;display:none}
+.di.active .ddot{display:block}
+.dsep{width:1px;height:36px;background:rgba(255,255,255,.12);margin:0 4px;align-self:center}
+.di.bouncing{animation:dbounce .5s ease-in-out 3}
+@keyframes dbounce{0%,100%{transform:translateY(0)}20%{transform:translateY(-20px)}40%{transform:translateY(-8px)}60%{transform:translateY(-14px)}80%{transform:translateY(-4px)}}
+.window{position:absolute;border-radius:12px;overflow:hidden;background:rgba(18,18,18,.72);backdrop-filter:blur(50px) saturate(180%);border:.5px solid rgba(255,255,255,.1);box-shadow:0 20px 60px rgba(0,0,0,.45);display:flex;flex-direction:column;min-width:320px;min-height:200px;will-change:transform,opacity}
+.window.focused{z-index:9000;box-shadow:0 24px 70px rgba(0,0,0,.55)}
+.wh{height:38px;background:rgba(28,28,28,.35);backdrop-filter:blur(20px);display:flex;align-items:center;padding:0 12px;cursor:default;border-bottom:.5px solid rgba(255,255,255,.05);flex-shrink:0}
+.window.focused .wh{background:rgba(32,32,32,.45)}
+.wc{display:flex;gap:8px;align-items:center;z-index:1}
+.wb{width:12px;height:12px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:7px;color:transparent;border:.5px solid rgba(0,0,0,.1)}
+.wb:hover{color:rgba(0,0,0,.55)}
+.wb-close{background:#ff5f57}
+.wb-min{background:#febc2e}
+.wb-max{background:#28c840}
+.window:not(.focused) .wb{background:rgba(255,255,255,.08)}
+.wtitle{flex:1;text-align:center;color:rgba(255,255,255,.82);font-size:13px;font-weight:600;margin:0 60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wbody{flex:1;overflow:auto;position:relative;background:rgba(15,15,15,.5)}
+.wresize{position:absolute;bottom:0;right:0;width:18px;height:18px;cursor:nwse-resize;z-index:5}
+.window.opening{animation:winOpen .4s cubic-bezier(.16,1,.3,1) both}
+@keyframes winOpen{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
+.window.closing{animation:winClose .3s cubic-bezier(.6,0,.7,0) both;pointer-events:none!important}
+@keyframes winClose{0%{transform:scale(1);opacity:1}100%{transform:scale(0);opacity:0}}
+.window.minimizing{animation:winMin .45s cubic-bezier(.4,0,.2,1) both;pointer-events:none!important}
+@keyframes winMin{0%{transform:scale(1);opacity:1}100%{transform:scale(0);opacity:0}}
+.window.restoring{animation:winRestore .4s cubic-bezier(.16,1,.3,1) both}
+@keyframes winRestore{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
+.window.zooming{transition:all .4s cubic-bezier(.16,1,.3,1)}
+#spotlight-overlay{position:fixed;inset:0;background:rgba(0,0,0,.25);backdrop-filter:blur(12px);z-index:20000;display:none;justify-content:center;padding-top:18vh}
+#spotlight-overlay.show{display:flex}
+#spotlight{width:580px;border-radius:12px;overflow:hidden;background:rgba(22,22,22,.72);backdrop-filter:blur(60px) saturate(200%);border:.5px solid rgba(255,255,255,.12);box-shadow:0 25px 80px rgba(0,0,0,.6)}
+#spotlight-input{width:100%;padding:14px 18px;background:transparent;border:none;color:#fff;font-size:20px;outline:none;border-bottom:.5px solid rgba(255,255,255,.06)}
+#spotlight-input::placeholder{color:rgba(255,255,255,.3)}
+#spotlight-results{max-height:300px;overflow-y:auto;padding:4px 0}
+.si{padding:7px 16px;display:flex;align-items:center;gap:10px;cursor:default;color:rgba(255,255,255,.9);font-size:14px;border-radius:5px;margin:1px 4px}
+.si:hover,.si.sel{background:#0a84ff}
+.si-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;background:rgba(255,255,255,.06)}
+#lp-overlay{position:fixed;inset:0;background:rgba(10,10,10,.75);backdrop-filter:blur(40px);z-index:15000;display:none;justify-content:center;align-items:center;flex-direction:column}
+#lp-overlay.show{display:flex;animation:fadeIn .3s both}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+#lp-search{width:250px;padding:8px 14px;border-radius:8px;border:.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:#fff;font-size:13px;margin-bottom:26px;outline:none}
+#lp-search::placeholder{color:rgba(255,255,255,.3)}
+#lp-grid{display:grid;grid-template-columns:repeat(7,94px);gap:26px;max-width:800px}
+.lp-app{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;transition:transform .2s}
+.lp-app:hover{transform:scale(1.12)}
+.lp-app span{color:#fff;font-size:12px;text-shadow:0 1px 4px rgba(0,0,0,.5)}
+.lp-icon{width:62px;height:62px;border-radius:14px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.lp-icon img{width:100%;height:100%;object-fit:cover}
+#nc-panel{position:fixed;top:24px;right:0;width:330px;height:calc(100vh - 24px);background:rgba(18,18,18,.62);backdrop-filter:blur(60px);border-left:.5px solid rgba(255,255,255,.06);z-index:11000;transform:translateX(100%);transition:transform .35s cubic-bezier(.16,1,.3,1);padding:12px;overflow-y:auto}
+#nc-panel.show{transform:translateX(0)}
+.nc-widget{background:rgba(40,40,40,.4);border-radius:12px;padding:12px;margin-bottom:8px;border:.5px solid rgba(255,255,255,.05)}
+.nc-title{color:rgba(255,255,255,.35);font-size:11px;text-transform:uppercase;margin-bottom:5px;font-weight:700}
+.nc-content{color:#fff;font-size:13px}
+.nc-notif{background:rgba(40,40,40,.4);border-radius:12px;padding:10px;margin-bottom:6px;display:flex;gap:10px;border:.5px solid rgba(255,255,255,.05)}
+.nc-notif-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.nc-notif-title{color:#fff;font-size:12px;font-weight:600}
+.nc-notif-body{color:rgba(255,255,255,.45);font-size:11px;margin-top:1px}
+.nc-header{color:rgba(255,255,255,.3);font-size:11px;text-transform:uppercase;font-weight:700;margin:12px 0 6px}
+#cc-panel{position:fixed;top:30px;right:8px;width:300px;background:rgba(20,20,20,.7);backdrop-filter:blur(60px) saturate(220%);border:.5px solid rgba(255,255,255,.1);border-radius:14px;padding:12px;z-index:10500;display:none;box-shadow:0 16px 50px rgba(0,0,0,.5)}
+#cc-panel.show{display:block}
+.cc-header{color:rgba(255,255,255,.35);font-size:11px;text-transform:uppercase;font-weight:700;margin-bottom:8px}
+.cc-conn-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.cc-conn{background:rgba(45,45,45,.5);border-radius:12px;padding:12px;cursor:pointer;border:.5px solid rgba(255,255,255,.04);min-height:60px;display:flex;flex-direction:column;justify-content:space-between}
+.cc-conn:hover{background:rgba(52,52,52,.55)}
+.cc-conn.active{background:rgba(0,102,214,.65)}
+.cc-conn-top{display:flex;align-items:center;gap:8px}
+.cc-conn-icon{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:14px}
+.cc-conn.active .cc-conn-icon{background:rgba(255,255,255,.2)}
+.cc-conn-label{color:#fff;font-size:12px;font-weight:600}
+.cc-conn-sub{color:rgba(255,255,255,.4);font-size:10px;margin-top:1px}
+.cc-conn.active .cc-conn-sub{color:rgba(255,255,255,.6)}
+.cc-group{background:rgba(45,45,45,.5);border-radius:12px;padding:12px 14px;margin-bottom:8px}
+.cc-label{color:rgba(255,255,255,.5);font-size:11px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.cc-slider{width:100%;height:6px;-webkit-appearance:none;appearance:none;background:rgba(255,255,255,.12);border-radius:3px;outline:none}
+.cc-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.cc-np{background:rgba(45,45,45,.5);border-radius:12px;padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.cc-np-art{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#667eea,#764ba2);flex-shrink:0}
+.cc-np-info{flex:1;min-width:0}
+.cc-np-title{color:#fff;font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cc-np-artist{color:rgba(255,255,255,.4);font-size:10px}
+.cc-np-ctrls{display:flex;gap:4px}
+.cc-np-btn{width:24px;height:24px;border:none;background:none;color:#fff;font-size:13px;cursor:pointer;border-radius:50%}
+.cc-np-btn:hover{background:rgba(255,255,255,.1)}
+.cc-bottom{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px}
+.cc-tile{background:rgba(45,45,45,.5);border-radius:12px;padding:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+.cc-tile:hover{background:rgba(52,52,52,.55)}
+.cc-tile.active{background:rgba(0,102,214,.65)}
+.cc-tile-icon{font-size:16px}
+.cc-tile-label{color:#fff;font-size:10px;font-weight:500}
+#ctx-menu{position:fixed;background:rgba(22,22,22,.82);backdrop-filter:blur(50px);border:.5px solid rgba(255,255,255,.1);border-radius:8px;padding:4px;min-width:200px;display:none;z-index:30000;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+#ctx-menu.show{display:block;animation:ddIn .12s both}
+.popover{position:fixed;top:28px;background:rgba(20,20,20,.75);backdrop-filter:blur(60px);border:.5px solid rgba(255,255,255,.1);border-radius:12px;padding:12px;z-index:10200;display:none;box-shadow:0 12px 40px rgba(0,0,0,.5);animation:ddIn .15s both}
+.popover.show{display:block}
+.ptitle{color:rgba(255,255,255,.35);font-size:11px;text-transform:uppercase;font-weight:700;margin-bottom:8px}
+.prow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:.5px solid rgba(255,255,255,.04);cursor:pointer}
+.prow:last-child{border-bottom:none}
+.prow:hover{background:rgba(255,255,255,.03);margin:0 -8px;padding:6px 8px;border-radius:6px}
+.prow.connected{color:#34c759}
+.plabel{color:rgba(255,255,255,.8);font-size:13px}
+.pvalue{color:rgba(255,255,255,.4);font-size:13px}
+.ptoggle{width:36px;height:20px;border-radius:10px;background:rgba(255,255,255,.12);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.ptoggle.on{background:#34c759}
+.ptoggle::after{content:'';position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:2px;left:2px;transition:transform .2s}
+.ptoggle.on::after{transform:translateX(16px)}
+::-webkit-scrollbar{width:7px;height:7px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:4px}
+.fsidebar{width:170px;background:rgba(25,25,25,.4);border-right:.5px solid rgba(255,255,255,.05);padding:8px 0;flex-shrink:0;overflow-y:auto}
+.fshdr{color:rgba(255,255,255,.3);font-size:11px;padding:6px 12px 3px;text-transform:uppercase;font-weight:700}
+.fsitem{padding:4px 12px;color:rgba(255,255,255,.8);font-size:13px;cursor:default;display:flex;align-items:center;gap:7px;border-radius:5px;margin:0 5px}
+.fsitem:hover{background:rgba(255,255,255,.04)}
+.fsitem.active{background:rgba(0,102,214,.35)}
+.fcontent{flex:1;padding:12px;overflow-y:auto}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:12px}
+.ffile{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px;border-radius:8px;cursor:default}
+.ffile:hover{background:rgba(255,255,255,.04)}
+.ffile span{color:rgba(255,255,255,.8);font-size:12px;text-align:center}
+
+/* ========= SAFARI REAL UI ========= */
+.safari-root{display:flex;flex-direction:column;height:100%;background:#1c1c1e}
+.safari-tabbar{display:flex;align-items:center;background:rgba(30,30,32,.95);border-bottom:.5px solid rgba(255,255,255,.08);padding:6px 10px 0;gap:6px;min-height:36px}
+.safari-tab{display:flex;align-items:center;gap:6px;padding:6px 10px;background:rgba(50,50,55,.5);border-radius:6px 6px 0 0;cursor:pointer;max-width:200px;min-width:80px;font-size:12px;color:rgba(255,255,255,.85);position:relative;border:.5px solid rgba(255,255,255,.05);border-bottom:none}
+.safari-tab.active{background:rgba(60,60,65,.95);color:#fff}
+.safari-tab-favicon{width:14px;height:14px;border-radius:3px;flex-shrink:0;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:9px}
+.safari-tab-title{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.safari-tab-close{width:14px;height:14px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(255,255,255,.5);cursor:pointer;opacity:0;transition:opacity .1s}
+.safari-tab:hover .safari-tab-close{opacity:1}
+.safari-tab-close:hover{background:rgba(255,255,255,.1);color:#fff}
+.safari-tab-new{width:26px;height:26px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.6);cursor:pointer;border-radius:4px;font-size:16px;margin-top:4px}
+.safari-tab-new:hover{background:rgba(255,255,255,.08)}
+.safari-toolbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(30,30,32,.95);border-bottom:.5px solid rgba(255,255,255,.05)}
+.safari-btn{width:28px;height:26px;border-radius:6px;background:transparent;border:none;color:rgba(255,255,255,.5);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px}
+.safari-btn:hover:not(:disabled){background:rgba(255,255,255,.08);color:#fff}
+.safari-btn:disabled{opacity:.3;cursor:default}
+.safari-url-wrap{flex:1;position:relative}
+.safurl{width:100%;background:rgba(255,255,255,.08);border:.5px solid rgba(255,255,255,.08);border-radius:7px;padding:6px 32px 6px 12px;color:#fff;font-size:13px;outline:none;text-align:center}
+.safurl:focus{border-color:#0a84ff;background:rgba(255,255,255,.12);text-align:left;box-shadow:0 0 0 3px rgba(0,102,214,.15)}
+.safari-lock{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:10px;color:rgba(255,255,255,.5)}
+.safari-reader{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:18px;height:18px;border-radius:3px;color:rgba(255,255,255,.5);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px}
+.safari-reader:hover{background:rgba(255,255,255,.1);color:#fff}
+.safari-main{flex:1;display:flex;overflow:hidden;position:relative}
+.safari-sidebar{width:240px;background:rgba(28,28,30,.95);border-right:.5px solid rgba(255,255,255,.05);padding:10px;overflow-y:auto;flex-shrink:0}
+.safari-sb-tabs{display:flex;gap:4px;margin-bottom:12px;background:rgba(50,50,55,.4);border-radius:6px;padding:2px}
+.safari-sb-tab{flex:1;padding:5px;text-align:center;font-size:11px;color:rgba(255,255,255,.6);cursor:pointer;border-radius:4px;display:flex;align-items:center;justify-content:center;gap:4px}
+.safari-sb-tab.active{background:rgba(255,255,255,.1);color:#fff}
+.safari-sb-header{color:rgba(255,255,255,.4);font-size:11px;text-transform:uppercase;font-weight:700;margin:10px 4px 6px}
+.safari-sb-item{padding:5px 8px;color:rgba(255,255,255,.85);font-size:12px;cursor:pointer;border-radius:4px;display:flex;align-items:center;gap:6px}
+.safari-sb-item:hover{background:rgba(255,255,255,.05)}
+.safari-sb-item .favicon{width:14px;height:14px;border-radius:3px;background:rgba(255,255,255,.1);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:8px}
+.safari-content{flex:1;overflow:auto;background:#1c1c1e;position:relative}
+.safari-start{padding:30px;max-width:900px;margin:0 auto}
+.safari-start h2{color:#fff;font-size:22px;font-weight:600;margin-bottom:16px}
+.safari-start h3{color:rgba(255,255,255,.5);font-size:12px;text-transform:uppercase;font-weight:700;margin:24px 0 10px;letter-spacing:.5px}
+.safari-favs{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:12px}
+.safari-fav{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px;border-radius:10px;cursor:pointer}
+.safari-fav:hover{background:rgba(255,255,255,.05)}
+.safari-fav-icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 10px rgba(0,0,0,.3)}
+.safari-fav span{color:rgba(255,255,255,.7);font-size:11px;text-align:center}
+.safari-freq{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.safari-freq-item{background:rgba(40,40,45,.6);border-radius:8px;padding:10px;cursor:pointer;display:flex;gap:10px;align-items:center}
+.safari-freq-item:hover{background:rgba(50,50,55,.8)}
+.safari-freq-thumb{width:60px;height:40px;border-radius:4px;background:linear-gradient(135deg,#4facfe,#00f2fe);flex-shrink:0}
+.safari-freq-info h4{color:#fff;font-size:12px;font-weight:500;margin-bottom:2px}
+.safari-freq-info p{color:rgba(255,255,255,.4);font-size:10px}
+.safari-privacy{background:rgba(40,40,45,.6);border-radius:10px;padding:14px;display:flex;align-items:center;gap:14px}
+.safari-privacy-icon{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#0a84ff,#5856d6);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.safari-privacy-info h4{color:#fff;font-size:14px;margin-bottom:3px}
+.safari-privacy-info p{color:rgba(255,255,255,.5);font-size:12px}
+.safari-web{padding:30px 40px;color:#fff;max-width:900px;margin:0 auto}
+.safari-web h1{font-size:28px;margin-bottom:12px;font-weight:600}
+.safari-web h2{font-size:22px;margin:20px 0 10px;font-weight:600}
+.safari-web h3{font-size:16px;margin:16px 0 8px;font-weight:600}
+.safari-web p{color:rgba(255,255,255,.8);line-height:1.7;margin-bottom:12px;font-size:14px}
+.safari-web a{color:#0a84ff;text-decoration:none;cursor:pointer}
+.safari-web a:hover{text-decoration:underline}
+.safari-hero{background:linear-gradient(135deg,#1a1a1a,#2a2a2a);border-radius:16px;padding:40px;margin-bottom:20px;text-align:center;border:.5px solid rgba(255,255,255,.08)}
+.safari-hero h1{font-size:48px;background:linear-gradient(135deg,#fff,#888);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.safari-hero p{font-size:16px;color:rgba(255,255,255,.6)}
+.safari-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;margin-top:20px}
+.safari-card{background:rgba(40,40,45,.6);border-radius:10px;overflow:hidden;cursor:pointer;border:.5px solid rgba(255,255,255,.05);transition:transform .2s}
+.safari-card:hover{transform:translateY(-2px)}
+.safari-card-img{height:140px;background:linear-gradient(135deg,#667eea,#764ba2)}
+.safari-card-body{padding:14px}
+.safari-card-body h4{color:#fff;font-size:14px;margin-bottom:6px}
+.safari-card-body p{color:rgba(255,255,255,.5);font-size:12px}
+.safari-search-box{max-width:600px;margin:40px auto;text-align:center}
+.safari-search-input{width:100%;padding:14px 20px;border-radius:24px;border:.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:#fff;font-size:15px;outline:none}
+.safari-search-input:focus{border-color:#0a84ff;background:rgba(255,255,255,.12)}
+.safari-search-btns{display:flex;gap:10px;justify-content:center;margin-top:16px}
+.safari-search-btn{padding:8px 16px;background:rgba(50,50,55,.6);border:.5px solid rgba(255,255,255,.08);border-radius:6px;color:rgba(255,255,255,.85);cursor:pointer;font-size:13px}
+.safari-search-btn:hover{background:rgba(60,60,65,.8)}
+.safari-results{max-width:700px;margin:30px auto}
+.safari-result-item{padding:14px;border-bottom:.5px solid rgba(255,255,255,.06);cursor:pointer}
+.safari-result-item:hover{background:rgba(255,255,255,.03)}
+.safari-result-url{color:#34c759;font-size:11px;margin-bottom:2px}
+.safari-result-title{color:#0a84ff;font-size:16px;margin-bottom:4px}
+.safari-result-desc{color:rgba(255,255,255,.6);font-size:13px;line-height:1.5}
+.safari-yt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:20px}
+.safari-yt-video{cursor:pointer}
+.safari-yt-thumb{width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#ff0000,#cc0000);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:40px;margin-bottom:8px;position:relative;overflow:hidden}
+.safari-yt-duration{position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.85);padding:2px 6px;border-radius:3px;font-size:11px;color:#fff}
+.safari-yt-title{color:#fff;font-size:13px;font-weight:500;line-height:1.4;margin-bottom:4px}
+.safari-yt-meta{color:rgba(255,255,255,.5);font-size:11px}
+.safari-gh-repo{background:rgba(40,40,45,.6);border-radius:8px;padding:16px;margin-bottom:12px;border:.5px solid rgba(255,255,255,.05);cursor:pointer}
+.safari-gh-repo:hover{background:rgba(50,50,55,.8)}
+.safari-gh-title{color:#58a6ff;font-size:16px;margin-bottom:4px}
+.safari-gh-desc{color:rgba(255,255,255,.6);font-size:13px;margin-bottom:8px}
+.safari-gh-meta{display:flex;gap:12px;color:rgba(255,255,255,.4);font-size:11px}
+.safari-gh-star{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;background:rgba(50,50,55,.8);border:.5px solid rgba(255,255,255,.1);border-radius:5px;font-size:11px;color:rgba(255,255,255,.8);cursor:pointer}
+.safari-wiki{background:rgba(255,255,255,.03);border-radius:8px;padding:16px;margin:12px 0;border-left:3px solid #0a84ff}
+.safari-wiki h4{color:#fff;margin-bottom:6px}
+.safari-wiki p{color:rgba(255,255,255,.7);font-size:13px}
+.safari-reddit-post{background:rgba(40,40,45,.6);border-radius:8px;padding:12px;margin-bottom:10px;display:flex;gap:12px;cursor:pointer;border:.5px solid rgba(255,255,255,.05)}
+.safari-reddit-votes{display:flex;flex-direction:column;align-items:center;gap:2px;color:rgba(255,255,255,.6);font-size:12px}
+.safari-reddit-vote-btn{cursor:pointer;font-size:14px}
+.safari-reddit-vote-btn:hover{color:#ff4500}
+.safari-reddit-content{flex:1}
+.safari-reddit-title{color:#fff;font-size:14px;font-weight:500;margin-bottom:4px}
+.safari-reddit-meta{color:rgba(255,255,255,.4);font-size:11px}
+
+.noteswrap{display:flex;height:100%}
+.nsidebar{width:190px;background:rgba(25,25,25,.4);border-right:.5px solid rgba(255,255,255,.05);display:flex;flex-direction:column}
+.nshdr{padding:9px 10px;border-bottom:.5px solid rgba(255,255,255,.05);display:flex;justify-content:space-between;align-items:center}
+.nshdr span{color:#fff;font-size:12px;font-weight:600}
+.nsearch{padding:8px 10px;border-bottom:.5px solid rgba(255,255,255,.05)}
+.nsearch input{width:100%;padding:5px 9px;border-radius:7px;border:.5px solid rgba(255,255,255,.06);background:rgba(255,255,255,.04);color:#fff;font-size:12px;outline:none}
+.nnew{background:#0a84ff;border:none;color:#fff;width:22px;height:22px;border-radius:6px;cursor:pointer;font-size:14px}
+.nlist{flex:1;overflow-y:auto;padding:5px}
+.nitem{padding:8px 9px;border-radius:6px;cursor:default;margin-bottom:2px}
+.nitem:hover{background:rgba(255,255,255,.04)}
+.nitem.active{background:rgba(0,102,214,.3)}
+.nitem-title{color:#fff;font-size:12px;font-weight:500}
+.nitem-prev{color:rgba(255,255,255,.35);font-size:11px;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.neditor{flex:1;padding:16px;display:flex;flex-direction:column}
+.neditor-toolbar{padding:8px 10px;border-bottom:.5px solid rgba(255,255,255,.05);display:flex;gap:4px}
+.neditor-toolbar button{background:rgba(255,255,255,.05);border:none;color:rgba(255,255,255,.5);padding:4px 8px;border-radius:5px;cursor:pointer;font-size:12px}
+.neditor textarea{flex:1;background:transparent;border:none;color:#fff;font-size:13px;resize:none;outline:none;line-height:1.6;margin-top:8px}
+.calcwrap{padding:12px;background:rgba(15,15,15,.95);height:100%;display:flex;flex-direction:column}
+.calcd{text-align:right;padding:6px 14px 14px;font-size:44px;color:#fff;font-weight:300;min-height:60px;display:flex;align-items:flex-end;justify-content:flex-end;overflow:hidden}
+.calcg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;flex:1}
+.cb{border:none;font-size:19px;cursor:pointer;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(50,50,50,.7);color:#fff}
+.cb:active{filter:brightness(1.5)}
+.cb.op{background:#ff9f0a}
+.cb.op.op-active{background:#fff;color:#ff9f0a}
+.cb.fn{background:rgba(70,70,70,.6)}
+.cb.zero{border-radius:40px;grid-column:span 2;padding:0 22px;justify-content:flex-start}
+
+/* ========= TERMINAL AUTHENTIC ========= */
+.termwrap{padding:10px 14px;font-family:'SF Mono','Menlo','Monaco','Courier New',monospace;color:#f2f2f2;font-size:13px;height:100%;overflow-y:auto;background:#1e1e1e;line-height:1.5}
+.termwrap::selection{background:#0a84ff;color:#fff}
+.tline{margin-bottom:1px;white-space:pre-wrap;word-break:break-all}
+.tinput{display:flex;align-items:flex-start}
+.tprompt{margin-right:6px;white-space:nowrap;flex-shrink:0}
+.tprompt-user{color:#0a84ff;font-weight:600}
+.tprompt-at{color:#f2f2f2}
+.tprompt-host{color:#34c759;font-weight:600}
+.tprompt-path{color:#af87ff;font-weight:500}
+.tprompt-sym{color:#f2f2f2}
+.tinput input{flex:1;background:transparent;border:none;color:#f2f2f2;font-family:inherit;font-size:inherit;outline:none;caret-color:#fff}
+.tgreen{color:#34c759}
+.tred{color:#ff453a}
+.tyellow{color:#ffd60a}
+.tblue{color:#0a84ff}
+.tpurple{color:#af87ff}
+.tgray{color:#8e8e93}
+.tbold{font-weight:700}
+.tcyan{color:#5ac8fa}
+
+.settingswrap{display:flex;height:100%}
+.sssidebar{width:210px;background:rgba(25,25,25,.4);border-right:.5px solid rgba(255,255,255,.05);overflow-y:auto;padding:5px}
+.ssitem{padding:5px 9px;border-radius:6px;display:flex;align-items:center;gap:7px;color:rgba(255,255,255,.8);font-size:13px;cursor:default}
+.ssitem:hover{background:rgba(255,255,255,.04)}
+.ssitem.active{background:rgba(0,102,214,.3)}
+.sc{flex:1;padding:16px;overflow-y:auto}
+.sc h2{color:#fff;font-size:20px;font-weight:600;margin-bottom:12px}
+.sg{background:rgba(40,40,40,.35);border-radius:10px;padding:12px;margin-bottom:8px}
+.sr{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:.5px solid rgba(255,255,255,.03)}
+.sr:last-child{border-bottom:none}
+.sr-label{color:rgba(255,255,255,.8);font-size:13px}
+.sr-value{color:rgba(255,255,255,.35);font-size:13px}
+.tewrap{display:flex;flex-direction:column;height:100%}
+.tetoolbar{display:flex;gap:3px;padding:5px 10px;background:rgba(28,28,28,.35);border-bottom:.5px solid rgba(255,255,255,.05);align-items:center}
+.tetoolbar button{background:rgba(255,255,255,.05);border:none;color:rgba(255,255,255,.45);padding:4px 7px;border-radius:5px;cursor:pointer;font-size:12px}
+.tecontent{flex:1;padding:12px}
+.tecontent textarea{width:100%;height:100%;background:rgba(22,22,22,.5);border:.5px solid rgba(255,255,255,.05);border-radius:8px;color:#fff;font-size:13px;resize:none;outline:none;line-height:1.7;padding:10px}
+.photoswrap{padding:12px;overflow-y:auto;height:100%}
+.photosgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:3px}
+.photosgrid img{width:100%;aspect-ratio:1;object-fit:cover;cursor:pointer;border-radius:2px}
+.photosgrid img:hover{transform:scale(1.02)}
+.photo-viewer{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:20000;display:none;align-items:center;justify-content:center}
+.photo-viewer.show{display:flex}
+.photo-viewer img{max-width:90%;max-height:90%;border-radius:8px}
+.photo-viewer-close{position:absolute;top:20px;right:20px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:#fff;font-size:20px;cursor:pointer}
+.musicwrap{display:flex;flex-direction:column;height:100%}
+.msidebar{width:190px;background:rgba(25,25,25,.4);border-right:.5px solid rgba(255,255,255,.05);padding:10px;overflow-y:auto}
+.msidebar h3{color:rgba(255,255,255,.3);font-size:11px;text-transform:uppercase;margin:8px 0 4px}
+.msitem{padding:4px 7px;color:rgba(255,255,255,.8);font-size:12px;border-radius:5px;cursor:default}
+.msitem:hover{background:rgba(255,255,255,.04)}
+.mmain{flex:1;overflow-y:auto;padding:12px}
+.mplayer{background:rgba(25,25,25,.5);border-top:.5px solid rgba(255,255,255,.05);padding:10px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.mart{width:40px;height:40px;border-radius:8px;flex-shrink:0}
+.minfo{flex:1;min-width:0}
+.mtitle{color:#fff;font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.martist{color:rgba(255,255,255,.35);font-size:10px}
+.mctrls{display:flex;gap:5px;align-items:center}
+.mbtn{background:none;border:none;color:#fff;font-size:14px;cursor:pointer;width:28px;height:28px;border-radius:50%}
+.mbtn:hover{background:rgba(255,255,255,.1)}
+.mbtn.play{font-size:18px;width:32px;height:32px}
+.mprogress{flex:1;max-width:170px}
+.mprogress input[type=range]{width:100%;height:4px;-webkit-appearance:none;background:rgba(255,255,255,.1);border-radius:2px;outline:none}
+.mprogress input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;border-radius:50%;background:#fff;cursor:pointer}
+.weatherwrap{padding:20px;text-align:center;height:100%;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(180deg,#4a90d9,#67b8de,#a0d8f0)}
+.wcity{color:#fff;font-size:22px;font-weight:300}
+.wtemp{color:#fff;font-size:52px;font-weight:200;margin:4px 0}
+.wcond{color:rgba(255,255,255,.7);font-size:15px;margin-bottom:14px}
+.wdetails{display:flex;justify-content:center;gap:20px}
+.wdetail{text-align:center}
+.wdetail-label{color:rgba(255,255,255,.35);font-size:10px;text-transform:uppercase}
+.wdetail-value{color:#fff;font-size:13px;margin-top:2px;font-weight:500}
+.wforecast{display:flex;justify-content:center;gap:12px;margin-top:14px}
+.fcday{text-align:center}
+.fcname{color:rgba(255,255,255,.45);font-size:11px}
+.fc-temp{color:#fff;font-size:13px;margin-top:2px;font-weight:500}
+.msgswrap{display:flex;height:100%}
+.msgssidebar{width:240px;background:rgba(25,25,25,.4);border-right:.5px solid rgba(255,255,255,.05);display:flex;flex-direction:column}
+.msgssearch{padding:7px 9px;border-bottom:.5px solid rgba(255,255,255,.05)}
+.msgssearch input{width:100%;padding:5px 9px;border-radius:7px;border:.5px solid rgba(255,255,255,.06);background:rgba(255,255,255,.04);color:#fff;font-size:12px;outline:none}
+.msgslist{flex:1;overflow-y:auto;padding:3px}
+.msthread{padding:7px 9px;border-radius:7px;cursor:default;display:flex;gap:7px;align-items:center}
+.msthread:hover{background:rgba(255,255,255,.04)}
+.msthread.active{background:rgba(0,102,214,.28)}
+.msavatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;flex-shrink:0}
+.msinfo{flex:1;overflow:hidden}
+.msname{color:#fff;font-size:12px;font-weight:500}
+.msprev{color:rgba(255,255,255,.35);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mchat-hdr{padding:9px 12px;border-bottom:.5px solid rgba(255,255,255,.05);text-align:center;color:#fff;font-size:12px;font-weight:500}
+.mmsgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:5px}
+.mbubble{max-width:66%;padding:7px 11px;border-radius:16px;font-size:12px;line-height:1.4}
+.mbubble.sent{background:#0a84ff;color:#fff;align-self:flex-end;border-bottom-right-radius:5px}
+.mbubble.recv{background:rgba(48,48,48,.7);color:#fff;align-self:flex-start;border-bottom-left-radius:5px}
+.minputarea{padding:7px 10px;border-top:.5px solid rgba(255,255,255,.05);display:flex;gap:5px;align-items:center}
+.minputarea input{flex:1;padding:6px 10px;border-radius:18px;border:.5px solid rgba(255,255,255,.06);background:rgba(255,255,255,.04);color:#fff;font-size:12px;outline:none}
+.msend{width:28px;height:28px;border-radius:50%;background:#0a84ff;border:none;color:#fff;cursor:pointer;font-size:12px}
+.calwrap{padding:14px}
+.calhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.calhdr h2{color:#fff;font-size:17px;font-weight:600}
+.calnav{display:flex;gap:5px}
+.calnav button{width:24px;height:24px;border-radius:6px;background:rgba(255,255,255,.05);border:none;color:#fff;cursor:pointer;font-size:11px}
+.calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.calday-hdr{color:rgba(255,255,255,.3);font-size:10px;text-align:center;padding:5px 0}
+.calday{aspect-ratio:1;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.65);font-size:12px;border-radius:50%;cursor:default;width:32px;height:32px;margin:auto}
+.calday:hover{background:rgba(255,255,255,.08)}
+.calday.today{background:#0a84ff;color:#fff;font-weight:600}
+.calday.other{color:rgba(255,255,255,.15)}
+.mapswrap{position:relative;height:100%;background:#1a2332;overflow:hidden}
+.mapssearch{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:270px;z-index:10}
+.mapssearch input{width:100%;padding:8px 12px;border-radius:10px;border:.5px solid rgba(255,255,255,.06);background:rgba(20,20,20,.8);color:#fff;font-size:12px;outline:none;box-shadow:0 4px 10px rgba(0,0,0,.4)}
+.maps-canvas{width:100%;height:100%}
+.aboutwrap{padding:20px;text-align:center}
+.about-logo{font-size:48px;margin-bottom:5px}
+.about-title{color:#fff;font-size:20px;font-weight:600}
+.about-ver{color:rgba(255,255,255,.35);font-size:12px;margin-bottom:14px}
+.about-info{text-align:left}
+.arow{display:flex;padding:5px 0;border-bottom:.5px solid rgba(255,255,255,.03)}
+.arow-label{color:rgba(255,255,255,.35);font-size:12px;width:90px;flex-shrink:0}
+.arow-value{color:#fff;font-size:12px}
+#login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#0a0a1a,#1a1a3e,#0f2460,#432878,#7a2888,#c23858);z-index:100000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s,transform .5s}
+#login-screen.hidden{opacity:0;transform:scale(1.05);pointer-events:none}
+.login-avatar{width:78px;height:78px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;font-size:30px;margin-bottom:8px;box-shadow:0 6px 24px rgba(0,0,0,.35)}
+.login-name{color:#fff;font-size:16px;font-weight:500;margin-bottom:12px}
+.login-pass{width:180px;padding:7px 12px;border-radius:14px;border:.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#fff;font-size:12px;outline:none;text-align:center}
+.login-pass::placeholder{color:rgba(255,255,255,.25)}
+.login-hint{color:rgba(255,255,255,.2);font-size:10px;margin-top:5px}
+.login-time{color:#fff;font-size:56px;font-weight:200;position:absolute;top:14%}
+.login-date{color:rgba(255,255,255,.55);font-size:15px;position:absolute;top:calc(14% + 62px)}
+.alert-modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:30000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(5px)}
+.alert-modal.show{display:flex}
+.alert-box{background:rgba(30,30,30,.95);border:.5px solid rgba(255,255,255,.1);border-radius:12px;padding:20px;min-width:300px;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.alert-title{color:#fff;font-size:16px;font-weight:600;margin-bottom:8px}
+.alert-msg{color:rgba(255,255,255,.7);font-size:13px;margin-bottom:16px;line-height:1.5}
+.alert-btn{padding:7px 16px;border-radius:7px;border:none;cursor:pointer;font-size:13px;background:#0a84ff;color:#fff;float:right}
+.alert-btn:hover{background:#0066d6}
+</style>
+</head>
+<body>
+<div id="login-screen">
+  <div class="login-time" id="login-time"></div>
+  <div class="login-date" id="login-date"></div>
+  <div class="login-avatar">👤</div>
+  <div class="login-name">User</div>
+  <input type="password" class="login-pass" id="login-pass" placeholder="Enter any password" autofocus>
+  <div class="login-hint">Press Enter or click anywhere to unlock</div>
+</div>
+
+<div id="desktop">
+  <div id="desktop-wallpaper"></div>
+
+  <div id="menubar">
+    <div class="ml">
+      <div class="mi apple" id="apple-menu" onclick="toggleMenu('apple')">
+        <svg width="12" height="15" viewBox="0 0 12 15" fill="currentColor"><path d="M9.5 8.5c-.02-2.4 1.96-3.56 2.05-3.62-1.12-1.63-2.86-1.86-3.48-1.89-1.48-.15-2.89.87-3.64.87-.75 0-1.91-.85-3.14-.83-1.62.03-3.11.94-3.94 2.38-1.68 2.92-.43 7.24 1.21 9.62.8 1.17 1.76 2.48 3.02 2.43 1.21-.05 1.67-.78 3.13-.78 1.46 0 1.87.78 3.14.75 1.31-.02 2.13-1.19 2.92-2.36.92-1.35 1.3-2.65 1.32-2.72-.03-.01-2.53-.97-2.53-3.87z"/></svg>
+        <div class="dd" id="apple-dropdown">
+          <div class="di-i" onclick="openApp('about')">About This Mac</div>
+          <div class="ds"></div>
+          <div class="di-i" onclick="openApp('settings')">System Settings...</div>
+          <div class="ds"></div>
+          <div class="di-i" onclick="sleepMac()">Sleep</div>
+          <div class="di-i" onclick="restartMac()">Restart...</div>
+          <div class="di-i" onclick="lockScreen()">Lock Screen <span class="dsc">⌃⌘Q</span></div>
+        </div>
+      </div>
+      <div class="mi appname" id="active-app-name">Finder</div>
+      <div class="mi" onclick="toggleMenu('file')">File<div class="dd" id="file-dropdown"><div class="di-i" onclick="openApp('finder')">New Window <span class="dsc">⌘N</span></div><div class="di-i" onclick="closeActive()">Close <span class="dsc">⌘W</span></div></div></div>
+      <div class="mi" onclick="toggleMenu('edit')">Edit<div class="dd" id="edit-dropdown"><div class="di-i">Undo <span class="dsc">⌘Z</span></div><div class="di-i">Copy <span class="dsc">⌘C</span></div></div></div>
+      <div class="mi" onclick="toggleMenu('window')">Window<div class="dd" id="window-dropdown"><div class="di-i" onclick="minActive()">Minimize <span class="dsc">⌘M</span></div><div class="di-i" onclick="zoomActive()">Zoom</div></div></div>
+      <div class="mi" onclick="toggleMenu('help')">Help<div class="dd" id="help-dropdown"><div class="di-i" onclick="openSpotlight()">Spotlight <span class="dsc">⌘Space</span></div></div></div>
+    </div>
+    <div class="mr">
+      <div class="mi" id="airpods-status" style="display:none" title="AirPods Pro Connected">🎧</div>
+      <div class="mi" onclick="toggleCC()" title="Control Center">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="1" width="4.5" height="4.5" rx="1.5" opacity=".85"/><rect x="8.5" y="1" width="4.5" height="4.5" rx="1.5" opacity=".5"/><rect x="1" y="8.5" width="4.5" height="4.5" rx="1.5" opacity=".5"/><rect x="8.5" y="8.5" width="4.5" height="4.5" rx="1.5" opacity=".25"/></svg>
+      </div>
+      <div class="mi" onclick="openApp('weather')">☀️<span id="weather-temp">22°</span></div>
+      <div class="mi" id="battery-btn" onclick="toggleBatPop()" title="Battery">
+        <svg width="22" height="11" viewBox="0 0 22 11"><rect x="0" y="0" width="19" height="11" rx="2" fill="none" stroke="currentColor" stroke-width=".8"/><rect x="20" y="3" width="2" height="5" rx="1" fill="currentColor" opacity=".4"/><rect x="1.5" y="1.5" width="16" height="8" rx="1" fill="#34c759"/></svg>
+      </div>
+      <div class="mi" id="wifi-btn" onclick="toggleWifiPop()" title="Wi-Fi">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 10.5a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4zM2.5 7.5a6.3 6.3 0 019 0l-1.2 1.2a4.6 4.6 0 00-6.6 0L2.5 7.5z"/></svg>
+      </div>
+      <div class="mi" id="bt-status" onclick="toggleBtPop()" title="Bluetooth">
+        <svg width="12" height="14" viewBox="0 0 12 14" fill="currentColor"><path d="M6 0v14l5-4-5-4 5-4-5-4zM6 2l3 2.5L6 7V2zm0 5l3 2.5L6 12V7z"/></svg>
+      </div>
+      <div class="mi" onclick="toggleNC()" title="Notifications">🔔</div>
+      <div class="mi" id="clock-btn" onclick="toggleClockPop()"></div>
+    </div>
+  </div>
+
+  <div class="popover" id="battery-pop" style="width:260px;right:80px">
+    <div class="ptitle">Battery</div>
+    <div style="text-align:center;font-size:44px;margin:6px 0">🔋</div>
+    <div class="prow"><span class="plabel">Battery</span><span class="pvalue">100%</span></div>
+    <div class="prow"><span class="plabel">Power Source</span><span class="pvalue">Adapter</span></div>
+    <div class="prow"><span class="plabel">Low Power Mode</span><div class="ptoggle" onclick="this.classList.toggle('on')"></div></div>
+  </div>
+  <div class="popover" id="wifi-pop" style="width:280px;right:50px">
+    <div class="ptitle">Wi-Fi</div>
+    <div class="prow"><span class="plabel">Wi-Fi</span><div class="ptoggle on" id="wifi-toggle" onclick="toggleWifiState(this)"></div></div>
+    <div class="ds"></div>
+    <div class="prow connected" onclick="connectWifi('Home')" id="wifi-Home"><span class="plabel">✓ Home</span><span class="pvalue">🔒</span></div>
+    <div class="prow" onclick="connectWifi('Office_WiFi')" id="wifi-Office_WiFi"><span class="plabel">Office_WiFi</span><span class="pvalue">🔒</span></div>
+    <div class="prow" onclick="connectWifi('Neighbor_5G')" id="wifi-Neighbor_5G"><span class="plabel">Neighbor_5G</span><span class="pvalue">🔒</span></div>
+    <div class="prow" onclick="connectWifi('CoffeeShop')" id="wifi-CoffeeShop"><span class="plabel">CoffeeShop</span><span class="pvalue">Open</span></div>
+    <div class="prow" onclick="connectWifi('Airport_Free')" id="wifi-Airport_Free"><span class="plabel">Airport_Free</span><span class="pvalue">Open</span></div>
+  </div>
+  <div class="popover" id="bt-pop" style="width:300px;right:60px">
+    <div class="ptitle">Bluetooth</div>
+    <div class="prow"><span class="plabel">Bluetooth</span><div class="ptoggle on" id="bt-toggle" onclick="toggleBtState(this)"></div></div>
+    <div class="ds"></div>
+    <div style="color:rgba(255,255,255,.4);font-size:10px;text-transform:uppercase;font-weight:700;margin:6px 0">My Devices</div>
+    <div class="prow connected" id="bt-airpods" onclick="toggleAirpods()"><span class="plabel">🎧 AirPods Pro</span><span class="pvalue" id="airpods-status-text">Connected</span></div>
+    <div class="prow" onclick="connectBtDevice('Magic Mouse')" id="bt-mouse"><span class="plabel">🖱 Magic Mouse</span><span class="pvalue">Not Connected</span></div>
+    <div class="prow" onclick="connectBtDevice('Magic Keyboard')" id="bt-keyboard"><span class="plabel">⌨️ Magic Keyboard</span><span class="pvalue">Not Connected</span></div>
+    <div class="prow" onclick="connectBtDevice('Apple Watch')" id="bt-watch"><span class="plabel">⌚ Apple Watch</span><span class="pvalue">Not Connected</span></div>
+    <div class="ds"></div>
+    <div style="color:rgba(255,255,255,.4);font-size:10px;text-transform:uppercase;font-weight:700;margin:6px 0">Other Devices</div>
+    <div class="prow"><span class="plabel">📱 iPhone (John)</span><span class="pvalue">Available</span></div>
+    <div class="prow"><span class="plabel">🔊 HomePod</span><span class="pvalue">Available</span></div>
+    <div class="prow"><span class="plabel">🎮 PS5 Controller</span><span class="pvalue">Available</span></div>
+  </div>
+  <div class="popover" id="clock-pop" style="width:280px;right:6px">
+    <div class="ptitle" id="clock-pop-title"></div>
+    <div class="nc-widget" style="margin-top:6px"><div class="nc-title">Calendar</div><div class="nc-content" id="clock-pop-cal"></div></div>
+    <div class="nc-widget"><div class="nc-title">Reminders</div><div class="nc-content"><div style="margin-bottom:2px">• Review project</div><div>• Meeting at 3pm</div></div></div>
+  </div>
+
+  <div id="dock">
+    <div class="di" onclick="openApp('finder')" data-app="finder"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkyfbAivafwpn8PWbJ-xnDauPqcENyqRcxcA&s" alt="Finder"><div class="dtip">Finder</div><div class="ddot"></div></div>
+    <div class="di" onclick="openApp('launchpad')" data-app="launchpad"><img src="https://static.wikia.nocookie.net/logopedia/images/a/a6/Icon_512x512_Normallpad.png/revision/latest?cb=20210620184438" alt="Launchpad"><div class="dtip">Launchpad</div></div>
+    <div class="di" onclick="openApp('safari')" data-app="safari"><img src="https://static.vecteezy.com/system/resources/thumbnails/059/951/360/small/navigation-symbol-with-blue-background-and-red-arrow-design-png.png" alt="Safari"><div class="dtip">Safari</div><div class="ddot"></div></div>
+    <div class="di" onclick="openApp('messages')" data-app="messages"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbf4l6xiH29hbru1C5Lo2ADKLhiz-zJCAYmw&s" alt="Messages"><div class="dtip">Messages</div><div class="ddot"></div></div>
+    <div class="di" onclick="openApp('music')" data-app="music"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Apple_Music_icon.svg/500px-Apple_Music_icon.svg.png" alt="Music"><div class="dtip">Music</div><div class="ddot"></div></div>
+    <div class="dsep"></div>
+    <div class="di" onclick="openApp('notes')" data-app="notes"><img src="https://upload.wikimedia.org/wikipedia/commons/1/18/Notes_%28iOS_26%29_app_icon.png" alt="Notes"><div class="dtip">Notes</div><div class="ddot"></div></div>
+    <div class="di" onclick="openApp('calculator')" data-app="calculator"><img src="https://help.apple.com/assets/67DB4A443E933AA73E0B736E/67DB4A441BBBD795C80FED6E/en_US/d7683090881be82d88efa4ac1d3aec74.png" alt="Calculator"><div class="dtip">Calculator</div><div class="ddot"></div></div>
+    <div class="di" onclick="openApp('settings')" data-app="settings"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Settings_%28iOS%29.png/250px-Settings_%28iOS%29.png" alt="Settings"><div class="dtip">System Settings</div><div class="ddot"></div></div>
+    <div class="di" onclick="openApp('weather')" data-app="weather"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQW0hggvRVPpetG6HXxPNz84h6QUrqEuoNByw&s" alt="Weather"><div class="dtip">Weather</div><div class="ddot"></div></div>
+    <div class="di" onclick="openApp('calendar')" data-app="calendar"><img src="https://help.apple.com/assets/67DB4AD617009A1F970697F4/67DB4AD747D53316F70BB655/en_US/9c6fd1cb730164c989d1b3afab213fad.png" alt="Calendar"><div class="dtip">Calendar</div><div class="ddot"></div></div>
+    <div class="di" onclick="openApp('photos')" data-app="photos"><img src="https://img.icons8.com/3d-fluency/1200/ios-photos.jpg" alt="Photos"><div class="dtip">Photos</div><div class="ddot"></div></div>
+    <div class="di" onclick="openApp('terminal')" data-app="terminal"><img src="https://help.apple.com/assets/67DB80CC8ED20D93270BDBE5/67DB80CD888B30021203ACDC/en_US/71142b814e58f29c2e808244a3ef5877.png" alt="Terminal"><div class="dtip">Terminal</div><div class="ddot"></div></div>
+    <div class="di" onclick="openApp('textedit')" data-app="textedit"><img src="https://help.apple.com/assets/68CC893A6B742C9961081EFC/68CC893B2B6F40066705BA2C/en_US/8dc6ebc30c30ca85995bc8fd0996be81.png" alt="TextEdit"><div class="dtip">TextEdit</div><div class="ddot"></div></div>
+    <div class="di" onclick="openApp('maps')" data-app="maps"><img src="https://upload.wikimedia.org/wikipedia/commons/2/21/Apple_Maps_iOS_26_icon.png" alt="Maps"><div class="dtip">Maps</div><div class="ddot"></div></div>
+  </div>
+
+  <div id="windows-container"></div>
+
+  <div id="spotlight-overlay" onclick="closeSpotlight(event)">
+    <div id="spotlight" onclick="event.stopPropagation()">
+      <input type="text" id="spotlight-input" placeholder="Spotlight Search" oninput="spotSearch(this.value)" onkeydown="spotKey(event)">
+      <div id="spotlight-results"></div>
+    </div>
+  </div>
+
+  <div id="lp-overlay" onclick="closeLP(event)">
+    <input type="text" id="lp-search" placeholder="Search" onclick="event.stopPropagation()" oninput="filterLP(this.value)">
+    <div id="lp-grid" onclick="event.stopPropagation()"></div>
+  </div>
+
+  <div id="nc-panel">
+    <div class="nc-widget"><div class="nc-title">Calendar</div><div class="nc-content" id="nc-cal"></div></div>
+    <div class="nc-widget"><div class="nc-title">Weather</div><div class="nc-content">☀️ 22°C — Sunny</div></div>
+    <div class="nc-widget"><div class="nc-title">Screen Time</div><div class="nc-content" id="screen-time">4h 23m today</div></div>
+    <div class="nc-header">Notifications</div>
+    <div class="nc-notif"><div class="nc-notif-icon" style="background:linear-gradient(135deg,#5ac8fa,#007aff)">📧</div><div><div class="nc-notif-title">Mail</div><div class="nc-notif-body">3 new messages</div></div></div>
+    <div class="nc-notif"><div class="nc-notif-icon" style="background:linear-gradient(135deg,#34c759,#30d158)">💬</div><div><div class="nc-notif-title">Messages</div><div class="nc-notif-body">Hey! Coming to the event?</div></div></div>
+  </div>
+
+  <div id="cc-panel">
+    <div class="cc-header">Control Center</div>
+    <div class="cc-conn-grid">
+      <div class="cc-conn active" onclick="this.classList.toggle('active')"><div class="cc-conn-top"><div class="cc-conn-icon">📶</div><div><div class="cc-conn-label">Wi-Fi</div><div class="cc-conn-sub" id="cc-wifi-name">Home Network</div></div></div></div>
+      <div class="cc-conn active" onclick="toggleBtCC(this)"><div class="cc-conn-top"><div class="cc-conn-icon">🔵</div><div><div class="cc-conn-label">Bluetooth</div><div class="cc-conn-sub" id="cc-bt-status">On</div></div></div></div>
+      <div class="cc-conn" onclick="toggleAirplane(this)"><div class="cc-conn-top"><div class="cc-conn-icon">✈️</div><div><div class="cc-conn-label">Airplane</div><div class="cc-conn-sub">Off</div></div></div></div>
+      <div class="cc-conn" onclick="toggleAirdrop(this)"><div class="cc-conn-top"><div class="cc-conn-icon">📤</div><div><div class="cc-conn-label">AirDrop</div><div class="cc-conn-sub">Contacts</div></div></div></div>
+    </div>
+    <div class="cc-group"><div class="cc-label">☀️ Display</div><input type="range" class="cc-slider" min="20" max="100" value="100" oninput="adjustBrightness(this.value)"></div>
+    <div class="cc-group"><div class="cc-label">🔊 Sound</div><input type="range" class="cc-slider" min="0" max="100" value="50" oninput="adjustVolume(this.value)"></div>
+    <div class="cc-np"><div class="cc-np-art" id="cc-np-art"></div><div class="cc-np-info"><div class="cc-np-title" id="cc-np-title">Blinding Lights</div><div class="cc-np-artist" id="cc-np-artist">The Weeknd</div></div><div class="cc-np-ctrls"><button class="cc-np-btn" onclick="musicPrev()">⏮</button><button class="cc-np-btn" onclick="toggleMusic()" id="cc-play-btn">▶</button><button class="cc-np-btn" onclick="musicNext()">⏭</button></div></div>
+    <div class="cc-bottom"><div class="cc-tile" onclick="toggleNightShift(this)"><span class="cc-tile-icon">🔆</span><span class="cc-tile-label">Night Shift</span></div><div class="cc-tile active" onclick="this.classList.toggle('active')"><span class="cc-tile-icon">📡</span><span class="cc-tile-label">AirPlay</span></div><div class="cc-tile" onclick="lockScreen()"><span class="cc-tile-icon">🔒</span><span class="cc-tile-label">Lock</span></div></div>
+  </div>
+
+  <div id="ctx-menu">
+    <div class="di-i" onclick="openApp('finder')">New Finder Window</div>
+    <div class="ds"></div>
+    <div class="di-i" onclick="openApp('settings')">Change Desktop Background...</div>
+    <div class="di-i" onclick="cleanUpDesktop()">Clean Up</div>
+  </div>
+</div>
+
+<div class="alert-modal" id="alert-modal" onclick="closeAlert(event)">
+  <div class="alert-box" onclick="event.stopPropagation()">
+    <div class="alert-title" id="alert-title">Alert</div>
+    <div class="alert-msg" id="alert-msg">Message</div>
+    <div style="overflow:hidden"><button class="alert-btn" onclick="closeAlertModal()">OK</button></div>
+  </div>
+</div>
+
+<div class="photo-viewer" id="photo-viewer" onclick="closePhotoViewer()">
+  <button class="photo-viewer-close" onclick="closePhotoViewer()">✕</button>
+  <img id="photo-viewer-img" src="" alt="Photo">
+</div>
+
+<script>
+// ======= SYSTEM STATE =======
+const SYS = {
+  wifi: { on: true, connected: 'Home' },
+  bluetooth: { on: true, devices: { 'AirPods Pro': { connected: true, type: 'audio' }, 'Magic Mouse': { connected: false }, 'Magic Keyboard': { connected: false }, 'Apple Watch': { connected: false } } },
+  airplane: false,
+  airdrop: true,
+  nightShift: false,
+  brightness: 100,
+  volume: 50,
+  wallpaper: 'linear-gradient(135deg,#0a0a1a,#1a1a3e,#0f2460,#432878,#7a2888,#c23858)',
+  locationServices: true,
+  cwd: '/Users/user'
+};
+
+const ICONS = {
+  finder:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkyfbAivafwpn8PWbJ-xnDauPqcENyqRcxcA&s',
+  launchpad:'https://static.wikia.nocookie.net/logopedia/images/a/a6/Icon_512x512_Normallpad.png/revision/latest?cb=20210620184438',
+  safari:'https://static.vecteezy.com/system/resources/thumbnails/059/951/360/small/navigation-symbol-with-blue-background-and-red-arrow-design-png.png',
+  messages:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbf4l6xiH29hbru1C5Lo2ADKLhiz-zJCAYmw&s',
+  music:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Apple_Music_icon.svg/500px-Apple_Music_icon.svg.png',
+  notes:'https://upload.wikimedia.org/wikipedia/commons/1/18/Notes_%28iOS_26%29_app_icon.png',
+  calculator:'https://help.apple.com/assets/67DB4A443E933AA73E0B736E/67DB4A441BBBD795C80FED6E/en_US/d7683090881be82d88efa4ac1d3aec74.png',
+  settings:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Settings_%28iOS%29.png/250px-Settings_%28iOS%29.png',
+  weather:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQW0hggvRVPpetG6HXxPNz84h6QUrqEuoNByw&s',
+  calendar:'https://help.apple.com/assets/67DB4AD617009A1F970697F4/67DB4AD747D53316F70BB655/en_US/9c6fd1cb730164c989d1b3afab213fad.png',
+  photos:'https://img.icons8.com/3d-fluency/1200/ios-photos.jpg',
+  terminal:'https://help.apple.com/assets/67DB80CC8ED20D93270BDBE5/67DB80CD888B30021203ACDC/en_US/71142b814e58f29c2e808244a3ef5877.png',
+  textedit:'https://help.apple.com/assets/68CC893A6B742C9961081EFC/68CC893B2B6F40066705BA2C/en_US/8dc6ebc30c30ca85995bc8fd0996be81.png',
+  maps:'https://upload.wikimedia.org/wikipedia/commons/2/21/Apple_Maps_iOS_26_icon.png'
+};
+
+// ======= WINDOW STATE =======
+let wins={},winOrder=[],activeWinId=null,winIdCnt=0;
+let calc={d:'0',p:null,op:null,reset:false};
+let notes=[{id:1,title:'Welcome to Notes',content:'Start typing to edit!'},{id:2,title:'Shopping List',content:'• Milk\n• Bread\n• Eggs'},{id:3,title:'Ideas',content:'- macOS clone\n- AI assistant'}];
+let activeNote=1;
+let calMonth=new Date().getMonth(),calYear=new Date().getFullYear();
+let musicOn=false,musicProg=0,musicInt=null,songIdx=0;
+let termHist=[],termIdx=-1;
+let currentMenu=null;
+let screenTimeMinutes=263;
+
+// ======= SAFARI STATE =======
+const safariState = {
+  tabs: [{ id: 1, url: 'startpage', title: 'Start Page', favicon: '🏠' }],
+  activeTab: 1,
+  tabIdCnt: 1,
+  history: [],
+  historyIdx: -1,
+  bookmarks: [
+    { name: 'Apple', url: 'apple.com', favicon: '🍎', folder: 'Favorites' },
+    { name: 'Google', url: 'google.com', favicon: 'G', folder: 'Favorites' },
+    { name: 'GitHub', url: 'github.com', favicon: '🐙', folder: 'Favorites' },
+    { name: 'YouTube', url: 'youtube.com', favicon: '▶', folder: 'Favorites' },
+    { name: 'Wikipedia', url: 'wikipedia.org', favicon: 'W', folder: 'Favorites' },
+    { name: 'Reddit', url: 'reddit.com', favicon: '🤖', folder: 'Favorites' },
+    { name: 'Twitter', url: 'twitter.com', favicon: '🐦', folder: 'Bookmarks' },
+    { name: 'Stack Overflow', url: 'stackoverflow.com', favicon: '📚', folder: 'Bookmarks' },
+  ],
+  readingList: [
+    { title: 'The Future of AI', url: 'wikipedia.org', desc: 'An exploration of artificial intelligence...' },
+    { title: 'Quantum Computing Basics', url: 'wikipedia.org', desc: 'Understanding qubits and quantum gates...' },
+  ],
+  sidebarTab: 'bookmarks'
+};
+
+const songs=[
+  {title:'Blinding Lights',artist:'The Weeknd',dur:'3:20',c:'#667eea,#764ba2'},
+  {title:'Bohemian Rhapsody',artist:'Queen',dur:'5:55',c:'#e53935,#ff6b6b'},
+  {title:'Shape of You',artist:'Ed Sheeran',dur:'3:53',c:'#43e97b,#38f9d7'},
+  {title:'Starboy',artist:'The Weeknd',dur:'3:50',c:'#4facfe,#00f2fe'},
+  {title:'Levitating',artist:'Dua Lipa',dur:'3:23',c:'#f093fb,#f5576c'},
+];
+const threads=[
+  {name:'Alice',av:'A',c:'#667eea,#764ba2',msgs:[{t:'Hey! How are you? 😊',s:false},{t:'Good! How about you?',s:true},{t:'Great! Coming to the event?',s:false}]},
+  {name:'Bob',av:'B',c:'#f093fb,#f5576c',msgs:[{t:'Thanks for help!',s:false},{t:'No problem!',s:true}]},
+  {name:'Charlie',av:'C',c:'#43e97b,#38f9d7',msgs:[{t:"Let's meet tomorrow",s:false}]},
+];
+let activeThread=0;
+
+// ======= WIFI / BT FUNCTIONS =======
+function updateStatusBar() {
+  const ap = document.getElementById('airpods-status');
+  if (SYS.bluetooth.on && SYS.bluetooth.devices['AirPods Pro'].connected) {
+    ap.style.display = 'flex';
+  } else {
+    ap.style.display = 'none';
+  }
+  document.getElementById('cc-wifi-name').textContent = SYS.wifi.on ? (SYS.wifi.connected + ' Network') : 'Off';
+  document.getElementById('cc-bt-status').textContent = SYS.bluetooth.on ? 'On' : 'Off';
+}
+
+function toggleWifiState(el) {
+  el.classList.toggle('on');
+  SYS.wifi.on = el.classList.contains('on');
+  if (!SYS.wifi.on) {
+    SYS.wifi.connected = null;
+    document.querySelectorAll('[id^="wifi-"]').forEach(r => r.classList.remove('connected'));
+  } else {
+    connectWifi('Home', true);
+  }
+  updateStatusBar();
+  showAlert('Wi-Fi', SYS.wifi.on ? 'Wi-Fi enabled' : 'Wi-Fi disabled');
+}
+
+function connectWifi(name, silent=false) {
+  if (!SYS.wifi.on) { showAlert('Wi-Fi', 'Please turn on Wi-Fi first'); return; }
+  SYS.wifi.connected = name;
+  document.querySelectorAll('[id^="wifi-"]').forEach(r => r.classList.remove('connected'));
+  const el = document.getElementById('wifi-' + name);
+  if (el) {
+    el.classList.add('connected');
+    el.querySelector('.plabel').textContent = '✓ ' + name;
+  }
+  // Reset others
+  ['Home','Office_WiFi','Neighbor_5G','CoffeeShop','Airport_Free'].forEach(n => {
+    if (n !== name) {
+      const other = document.getElementById('wifi-' + n);
+      if (other) other.querySelector('.plabel').textContent = n;
+    }
+  });
+  updateStatusBar();
+  if (!silent) showAlert('Wi-Fi', `Connected to ${name}`);
+}
+
+function toggleBtState(el) {
+  el.classList.toggle('on');
+  SYS.bluetooth.on = el.classList.contains('on');
+  if (!SYS.bluetooth.on) {
+    Object.keys(SYS.bluetooth.devices).forEach(d => SYS.bluetooth.devices[d].connected = false);
+    updateBtDeviceUI();
+  }
+  updateStatusBar();
+  showAlert('Bluetooth', SYS.bluetooth.on ? 'Bluetooth enabled' : 'Bluetooth disabled');
+}
+
+function toggleAirpods() {
+  if (!SYS.bluetooth.on) { showAlert('Bluetooth', 'Please turn on Bluetooth first'); return; }
+  SYS.bluetooth.devices['AirPods Pro'].connected = !SYS.bluetooth.devices['AirPods Pro'].connected;
+  updateBtDeviceUI();
+  updateStatusBar();
+}
+
+function connectBtDevice(name) {
+  if (!SYS.bluetooth.on) { showAlert('Bluetooth', 'Please turn on Bluetooth first'); return; }
+  if (!SYS.bluetooth.devices[name]) SYS.bluetooth.devices[name] = { connected: false };
+  SYS.bluetooth.devices[name].connected = !SYS.bluetooth.devices[name].connected;
+  updateBtDeviceUI();
+  updateStatusBar();
+}
+
+function updateBtDeviceUI() {
+  ['AirPods Pro','Magic Mouse','Magic Keyboard','Apple Watch'].forEach(d => {
+    const el = document.getElementById('bt-' + d.toLowerCase().replace(/\s+/g,'').replace('airpodspro','airpods'));
+    if (!el) return;
+    const val = el.querySelector('.pvalue');
+    if (SYS.bluetooth.devices[d] && SYS.bluetooth.devices[d].connected) {
+      el.classList.add('connected');
+      if (val) val.textContent = 'Connected';
+    } else {
+      el.classList.remove('connected');
+      if (val) val.textContent = 'Not Connected';
+    }
+  });
+}
+
+function toggleBtCC(el) {
+  el.classList.toggle('active');
+  SYS.bluetooth.on = el.classList.contains('active');
+  updateStatusBar();
+}
+
+function toggleAirplane(el) {
+  el.classList.toggle('active');
+  SYS.airplane = el.classList.contains('active');
+  if (SYS.airplane) {
+    SYS.wifi.on = false;
+    SYS.bluetooth.on = false;
+    document.getElementById('wifi-toggle').classList.remove('on');
+    document.getElementById('bt-toggle').classList.remove('on');
+    updateStatusBar();
+    showAlert('Airplane Mode', 'All wireless connections disabled');
+  } else {
+    SYS.wifi.on = true;
+    SYS.bluetooth.on = true;
+    document.getElementById('wifi-toggle').classList.add('on');
+    document.getElementById('bt-toggle').classList.add('on');
+    connectWifi('Home', true);
+    updateStatusBar();
+    showAlert('Airplane Mode', 'Wireless connections restored');
+  }
+}
+
+function toggleAirdrop(el) {
+  el.classList.toggle('active');
+  SYS.airdrop = el.classList.contains('active');
+  showAlert('AirDrop', SYS.airdrop ? 'AirDrop enabled for Contacts Only' : 'AirDrop disabled');
+}
+
+function toggleNightShift(el) {
+  el.classList.toggle('active');
+  SYS.nightShift = el.classList.contains('active');
+  document.body.style.filter = SYS.nightShift ? 'sepia(0.3) brightness(0.9)' : '';
+}
+
+function adjustBrightness(v){SYS.brightness=parseInt(v);document.getElementById('desktop').style.filter=`brightness(${v/100})`}
+function adjustVolume(v){SYS.volume=parseInt(v)}
+
+function toggleBtPop(){event.stopPropagation();closeAllMenus();document.getElementById('bt-pop').classList.toggle('show')}
+
+// ======= CLOCK =======
+function updateClock(){
+  const n=new Date();
+  document.getElementById('clock-btn').textContent=n.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+  const lt=document.getElementById('login-time');
+  if(lt){const h=n.getHours(),m=n.getMinutes().toString().padStart(2,'0');lt.textContent=h+':'+m}
+  const ld=document.getElementById('login-date');
+  if(ld)ld.textContent=n.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  const nc=document.getElementById('nc-cal');if(nc)nc.textContent=n.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  const cpt=document.getElementById('clock-pop-title');if(cpt)cpt.textContent=n.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  const cpc=document.getElementById('clock-pop-cal');if(cpc)cpc.textContent=n.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  const hours=Math.floor(screenTimeMinutes/60),mins=screenTimeMinutes%60;
+  document.getElementById('screen-time').textContent=`${hours}h ${mins}m today`;
+}
+setInterval(updateClock,1000);
+setInterval(()=>{screenTimeMinutes++;},60000);
+updateClock();
+
+// ======= LOGIN =======
+document.getElementById('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();document.getElementById('login-screen').classList.add('hidden')}});
+document.getElementById('login-screen').addEventListener('click',e=>{if(e.target.id!=='login-pass')document.getElementById('login-screen').classList.add('hidden')});
+
+// ======= MENUS =======
+function closeAllMenus(){
+  document.querySelectorAll('.dd').forEach(d=>d.classList.remove('show'));
+  document.getElementById('ctx-menu').classList.remove('show');
+  document.getElementById('cc-panel').classList.remove('show');
+  document.getElementById('nc-panel').classList.remove('show');
+  closePopovers();currentMenu=null;
+}
+function closePopovers(){['battery-pop','wifi-pop','bt-pop','clock-pop'].forEach(id=>document.getElementById(id).classList.remove('show'))}
+function toggleMenu(name){event.stopPropagation();const dd=document.getElementById(name+'-dropdown');if(currentMenu===name){dd.classList.remove('show');currentMenu=null;return}closeAllMenus();dd.classList.add('show');currentMenu=name}
+document.getElementById('apple-menu').addEventListener('click',e=>{e.stopPropagation();const dd=document.getElementById('apple-dropdown');if(currentMenu==='apple'){dd.classList.remove('show');currentMenu=null;return}closeAllMenus();dd.classList.add('show');currentMenu='apple'});
+document.addEventListener('click',e=>{if(!e.target.closest('.mi')&&!e.target.closest('.dd')&&!e.target.closest('.popover')&&!e.target.closest('#cc-panel')&&!e.target.closest('#nc-panel')&&!e.target.closest('.alert-modal'))closeAllMenus()});
+function toggleBatPop(){event.stopPropagation();closeAllMenus();document.getElementById('battery-pop').classList.toggle('show')}
+function toggleWifiPop(){event.stopPropagation();closeAllMenus();document.getElementById('wifi-pop').classList.toggle('show')}
+function toggleClockPop(){event.stopPropagation();closeAllMenus();document.getElementById('clock-pop').classList.toggle('show')}
+function toggleCC(){event.stopPropagation();closeAllMenus();document.getElementById('cc-panel').classList.toggle('show')}
+function toggleNC(){event.stopPropagation();closeAllMenus();document.getElementById('nc-panel').classList.toggle('show')}
+document.getElementById('desktop').addEventListener('contextmenu',e=>{if(e.target.closest('.window')||e.target.closest('#dock')||e.target.closest('#menubar'))return;e.preventDefault();const cm=document.getElementById('ctx-menu');cm.style.left=Math.min(e.clientX,innerWidth-220)+'px';cm.style.top=Math.min(e.clientY,innerHeight-200)+'px';cm.classList.add('show');closeAllMenus()});
+function cleanUpDesktop(){document.getElementById('ctx-menu').classList.remove('show');showAlert('Clean Up','Desktop cleaned up')}
+
+// ======= SPOTLIGHT =======
+function openSpotlight(){closeAllMenus();document.getElementById('spotlight-overlay').classList.add('show');const i=document.getElementById('spotlight-input');i.value='';document.getElementById('spotlight-results').innerHTML='';setTimeout(()=>i.focus(),80)}
+function closeSpotlight(e){if(e.target.id==='spotlight-overlay')document.getElementById('spotlight-overlay').classList.remove('show')}
+function spotSearch(q){const r=document.getElementById('spotlight-results');if(!q){r.innerHTML='';return}const apps=[{n:'Finder',a:'finder'},{n:'Safari',a:'safari'},{n:'Notes',a:'notes'},{n:'Calculator',a:'calculator'},{n:'Terminal',a:'terminal'},{n:'System Settings',a:'settings'},{n:'Music',a:'music'},{n:'Weather',a:'weather'},{n:'Calendar',a:'calendar'},{n:'Photos',a:'photos'},{n:'Messages',a:'messages'},{n:'TextEdit',a:'textedit'},{n:'Maps',a:'maps'},{n:'About',a:'about'}];const f=apps.filter(a=>a.n.toLowerCase().includes(q.toLowerCase()));r.innerHTML=f.slice(0,6).map((a,j)=>`<div class="si ${j===0?'sel':''}" onclick="openApp('${a.a}');document.getElementById('spotlight-overlay').classList.remove('show')"><div class="si-icon"><img src="${ICONS[a.a]}" style="width:100%;height:100%;border-radius:6px;object-fit:cover"></div>${a.n}</div>`).join('')}
+function spotKey(e){if(e.key==='Enter'){const s=document.querySelector('.si.sel');if(s)s.click()}if(e.key==='Escape')document.getElementById('spotlight-overlay').classList.remove('show')}
+
+// ======= LAUNCHPAD =======
+function openLaunchpad(){const apps=[{n:'Finder',a:'finder'},{n:'Safari',a:'safari'},{n:'Messages',a:'messages'},{n:'Music',a:'music'},{n:'Notes',a:'notes'},{n:'Calculator',a:'calculator'},{n:'Settings',a:'settings'},{n:'Weather',a:'weather'},{n:'Calendar',a:'calendar'},{n:'Photos',a:'photos'},{n:'Terminal',a:'terminal'},{n:'TextEdit',a:'textedit'},{n:'Maps',a:'maps'},{n:'About',a:'about'}];renderLP(apps);document.getElementById('lp-overlay').classList.add('show');document.getElementById('lp-search').value='';setTimeout(()=>document.getElementById('lp-search').focus(),100)}
+function renderLP(apps){document.getElementById('lp-grid').innerHTML=apps.map(a=>`<div class="lp-app" onclick="openApp('${a.a}');closeLP({target:{id:'lp-overlay'}})"><div class="lp-icon"><img src="${ICONS[a.a]}" alt="${a.n}"></div><span>${a.n}</span></div>`).join('')}
+function filterLP(q){const apps=[{n:'Finder',a:'finder'},{n:'Safari',a:'safari'},{n:'Messages',a:'messages'},{n:'Music',a:'music'},{n:'Notes',a:'notes'},{n:'Calculator',a:'calculator'},{n:'Settings',a:'settings'},{n:'Weather',a:'weather'},{n:'Calendar',a:'calendar'},{n:'Photos',a:'photos'},{n:'Terminal',a:'terminal'},{n:'TextEdit',a:'textedit'},{n:'Maps',a:'maps'},{n:'About',a:'about'}];renderLP(q?apps.filter(a=>a.n.toLowerCase().includes(q.toLowerCase())):apps)}
+function closeLP(e){if(e.target.id==='lp-overlay')document.getElementById('lp-overlay').classList.remove('show')}
+
+document.addEventListener('keydown',e=>{
+  if((e.metaKey||e.ctrlKey)&&e.code==='Space'){e.preventDefault();openSpotlight()}
+  if(e.key==='Escape'){document.getElementById('spotlight-overlay').classList.remove('show');document.getElementById('lp-overlay').classList.remove('show');document.getElementById('nc-panel').classList.remove('show');document.getElementById('cc-panel').classList.remove('show');closePopovers();closeAlertModal();closePhotoViewer()}
+  if(e.metaKey&&e.key==='w'){e.preventDefault();closeActive()}
+  if(e.metaKey&&e.key==='m'){e.preventDefault();minActive()}
+});
+
+// ======= WINDOW MGMT =======
+function createWindow(appId,title,w,h,content){
+  const id='win-'+(++winIdCnt);
+  const container=document.getElementById('windows-container');
+  const dockItem=document.querySelector(`.di[data-app="${appId}"]`);
+  const dockRect=dockItem?dockItem.getBoundingClientRect():null;
+  let left=80+(winIdCnt%5)*35,top=50+(winIdCnt%5)*25;
+  left=Math.max(20,Math.min(left,innerWidth-w-40));
+  top=Math.max(28,Math.min(top,innerHeight-h-80));
+  const win=document.createElement('div');
+  win.className='window opening';win.id=id;
+  win.style.cssText=`width:${w}px;height:${h}px;left:${left}px;top:${top}px;z-index:${1000+winOrder.length};`;
+  if(dockRect){const ox=dockRect.left+dockRect.width/2-left;const oy=dockRect.top+dockRect.height/2-top;win.style.transformOrigin=`${ox}px ${oy}px`}
+  win.innerHTML=`<div class="wh" onmousedown="startDrag(event,'${id}')"><div class="wc"><div class="wb wb-close" onclick="closeWindow('${id}')"></div><div class="wb wb-min" onclick="minimizeWindow('${id}')"></div><div class="wb wb-max" onclick="maximizeWindow('${id}')"></div></div><div class="wtitle">${title}</div></div><div class="wbody">${content}</div><div class="wresize" onmousedown="startResize(event,'${id}')"></div>`;
+  container.appendChild(win);
+  wins[id]={appId,title,minimized:false,maximized:false,prevBounds:null};
+  winOrder.push(id);
+  const di=document.querySelector(`.di[data-app="${appId}"]`);
+  if(di){di.classList.add('active');di.classList.add('bouncing');setTimeout(()=>di.classList.remove('bouncing'),1500)}
+  focusWindow(id);
+  setTimeout(()=>{if(win.classList.contains('opening'))win.classList.remove('opening')},400);
+  return id;
+}
+function focusWindow(id){document.querySelectorAll('.window').forEach(w=>w.classList.remove('focused'));const win=document.getElementById(id);if(!win)return;win.classList.add('focused');win.style.zIndex=1000+winOrder.length;winOrder=winOrder.filter(w=>w!==id);winOrder.push(id);activeWinId=id;const info=wins[id];if(info)document.getElementById('active-app-name').textContent=info.title}
+function closeWindow(id){const win=document.getElementById(id);if(!win)return;const dockItem=document.querySelector(`.di[data-app="${wins[id]?.appId}"]`);const dockRect=dockItem?dockItem.getBoundingClientRect():null;if(dockRect){const cl=parseInt(win.style.left),ct=parseInt(win.style.top);const ox=dockRect.left+dockRect.width/2-cl;const oy=dockRect.top+dockRect.height/2-ct;win.style.transformOrigin=`${ox}px ${oy}px`}win.style.pointerEvents='none';win.classList.add('closing');const appId=wins[id]?.appId;setTimeout(()=>{win.remove();delete wins[id];winOrder=winOrder.filter(w=>w!==id);const rem=Object.values(wins).filter(w=>w.appId===appId);if(!rem.length){const di=document.querySelector(`.di[data-app="${appId}"]`);if(di)di.classList.remove('active')}if(activeWinId===id){activeWinId=winOrder.length?winOrder[winOrder.length-1]:null;if(activeWinId)focusWindow(activeWinId);else document.getElementById('active-app-name').textContent='Finder'}},300)}
+function minimizeWindow(id){const win=document.getElementById(id);if(!win)return;const dockItem=document.querySelector(`.di[data-app="${wins[id]?.appId}"]`);const dockRect=dockItem?dockItem.getBoundingClientRect():null;if(dockRect){const cl=parseInt(win.style.left),ct=parseInt(win.style.top);const ox=dockRect.left+dockRect.width/2-cl;const oy=dockRect.top+dockRect.height/2-ct;win.style.transformOrigin=`${ox}px ${oy}px`}win.classList.add('minimizing');wins[id].minimized=true;setTimeout(()=>{win.style.display='none';win.classList.remove('minimizing')},450);if(activeWinId===id){const idx=winOrder.indexOf(id);activeWinId=idx>0?winOrder[idx-1]:winOrder.find(wid=>wid!==id&&!wins[wid]?.minimized);if(activeWinId)focusWindow(activeWinId);else document.getElementById('active-app-name').textContent='Finder'}}
+function restoreWindow(id){const win=document.getElementById(id);if(!win)return;const dockItem=document.querySelector(`.di[data-app="${wins[id]?.appId}"]`);const dockRect=dockItem?dockItem.getBoundingClientRect():null;wins[id].minimized=false;if(dockRect){const cl=parseInt(win.style.left)||80,ct=parseInt(win.style.top)||50;const ox=dockRect.left+dockRect.width/2-cl;const oy=dockRect.top+dockRect.height/2-ct;win.style.transformOrigin=`${ox}px ${oy}px`}win.style.display='';win.classList.add('restoring');setTimeout(()=>win.classList.remove('restoring'),400);focusWindow(id)}
+function maximizeWindow(id){const win=document.getElementById(id);if(!win||!wins[id])return;if(wins[id].maximized){const b=wins[id].prevBounds;win.classList.add('zooming');win.style.left=b.left;win.style.top=b.top;win.style.width=b.width;win.style.height=b.height;wins[id].maximized=false;setTimeout(()=>win.classList.remove('zooming'),400)}else{wins[id].prevBounds={left:win.style.left,top:win.style.top,width:win.style.width,height:win.style.height};win.classList.add('zooming');win.style.left='0px';win.style.top='24px';win.style.width='100vw';win.style.height='calc(100vh - 24px)';wins[id].maximized=true;setTimeout(()=>win.classList.remove('zooming'),400)}}
+function closeActive(){if(activeWinId)closeWindow(activeWinId)}
+function minActive(){if(activeWinId)minimizeWindow(activeWinId)}
+function zoomActive(){if(activeWinId)maximizeWindow(activeWinId)}
+function sleepMac(){closeAllMenus();document.getElementById('desktop').style.filter='brightness(0)';setTimeout(()=>{document.getElementById('desktop').style.filter=`brightness(${SYS.brightness/100})`},1500)}
+function restartMac(){closeAllMenus();showAlert('Restart','Restarting...');setTimeout(()=>lockScreen(),1000)}
+function lockScreen(){closeAllMenus();document.getElementById('login-screen').classList.remove('hidden');setTimeout(()=>document.getElementById('login-pass').focus(),300)}
+
+let dragState=null;
+function startDrag(e,id){if(e.target.closest('.wb'))return;const win=document.getElementById(id);if(!win||wins[id]?.maximized)return;focusWindow(id);dragState={id,sx:e.clientX,sy:e.clientY,ol:parseInt(win.style.left),ot:parseInt(win.style.top)};e.preventDefault()}
+document.addEventListener('mousemove',e=>{if(!dragState)return;const win=document.getElementById(dragState.id);if(!win)return;win.style.left=Math.max(0,dragState.ol+e.clientX-dragState.sx)+'px';win.style.top=Math.max(24,dragState.ot+e.clientY-dragState.sy)+'px'});
+document.addEventListener('mouseup',()=>{dragState=null});
+let resizeState=null;
+function startResize(e,id){const win=document.getElementById(id);if(!win||wins[id]?.maximized)return;focusWindow(id);resizeState={id,sx:e.clientX,sy:e.clientY,ow:win.offsetWidth,oh:win.offsetHeight};e.preventDefault();e.stopPropagation()}
+document.addEventListener('mousemove',e=>{if(!resizeState)return;const win=document.getElementById(resizeState.id);if(!win)return;win.style.width=Math.max(320,resizeState.ow+e.clientX-resizeState.sx)+'px';win.style.height=Math.max(200,resizeState.oh+e.clientY-resizeState.sy)+'px'});
+document.addEventListener('mouseup',()=>{resizeState=null});
+document.addEventListener('mousedown',e=>{const win=e.target.closest('.window');if(win){if(wins[win.id]?.minimized)restoreWindow(win.id);focusWindow(win.id)}});
+
+// ======= APP OPENER =======
+function openApp(appId){
+  closeAllMenus();
+  const minEntry=Object.entries(wins).find(([id,w])=>w.appId===appId&&w.minimized);
+  if(minEntry){restoreWindow(minEntry[0]);return}
+  const existing=Object.entries(wins).find(([id,w])=>w.appId===appId);
+  if(existing){focusWindow(existing[0]);return}
+  const apps={
+    finder:()=>createWindow('finder','Finder',880,540,getFinder()),
+    safari:()=>createWindow('safari','Safari',1050,680,getSafari()),
+    notes:()=>createWindow('notes','Notes',800,500,getNotes()),
+    calculator:()=>createWindow('calculator','Calculator',240,360,getCalc()),
+    terminal:()=>createWindow('terminal','user — -zsh — 80×24',750,460,getTerm()),
+    settings:()=>createWindow('settings','System Settings',880,580,getSettings()),
+    music:()=>createWindow('music','Music',900,540,getMusic()),
+    weather:()=>createWindow('weather','Weather',500,460,getWeather()),
+    calendar:()=>createWindow('calendar','Calendar',430,430,getCal()),
+    photos:()=>createWindow('photos','Photos',700,480,getPhotos()),
+    messages:()=>createWindow('messages','Messages',860,540,getMsgs()),
+    textedit:()=>createWindow('textedit','Untitled — TextEdit',660,480,getTextEdit()),
+    maps:()=>createWindow('maps','Maps',780,540,getMaps()),
+    about:()=>createWindow('about','About This Mac',330,390,getAbout()),
+    launchpad:()=>openLaunchpad(),
+  };
+  if(apps[appId])apps[appId]();
+}
+
+// ======= FINDER =======
+function getFinder(){return `<div style="display:flex;height:100%"><div class="fsidebar"><div class="fshdr">Favorites</div><div class="fsitem active" onclick="fNav(this,'desktop')">🏠 Desktop</div><div class="fsitem" onclick="fNav(this,'documents')">📄 Documents</div><div class="fsitem" onclick="fNav(this,'downloads')">⬇️ Downloads</div><div class="fsitem" onclick="fNav(this,'applications')">📁 Applications</div><div class="fshdr">Locations</div><div class="fsitem">💻 Macintosh HD</div></div><div class="fcontent"><div class="fgrid" id="finder-grid">${fItems('desktop')}</div></div></div>`}
+function fItems(loc){const items={desktop:[{t:'folder',n:'Documents'},{t:'folder',n:'Downloads'},{t:'file',n:'readme.txt'}],documents:[{t:'folder',n:'Work'},{t:'file',n:'report.pdf'}],downloads:[{t:'file',n:'image.png'},{t:'file',n:'archive.zip'}],applications:[{t:'app',n:'Safari'},{t:'app',n:'Terminal'},{t:'app',n:'Notes'},{t:'app',n:'Calculator'},{t:'app',n:'Music'},{t:'app',n:'Photos'}]};return(items[loc]||items.desktop).map(i=>{const ic=i.t==='folder'?'📁':i.t==='app'?`<img src="${ICONS[i.n.toLowerCase()]}" style="width:36px;height:36px;border-radius:8px;object-fit:cover">`:'📄';const act=i.t==='app'?i.n.toLowerCase():'finder';return `<div class="ffile" ondblclick="openApp('${act}')"><div style="font-size:36px">${ic}</div><span>${i.n}</span></div>`}).join('')}
+function fNav(el,loc){el.closest('.fsidebar').querySelectorAll('.fsitem').forEach(i=>i.classList.remove('active'));el.classList.add('active');const g=document.getElementById('finder-grid');if(g)g.innerHTML=fItems(loc)}
+
+// =============== SAFARI WITH FULL UI ===============
+function getSafari() {
+  return `<div class="safari-root">
+    <div class="safari-tabbar" id="safari-tabbar"></div>
+    <div class="safari-toolbar">
+      <button class="safari-btn" onclick="safBack()" id="saf-back">◀</button>
+      <button class="safari-btn" onclick="safFwd()" id="saf-fwd">▶</button>
+      <button class="safari-btn" onclick="safReload()">↻</button>
+      <div class="safari-url-wrap">
+        <span class="safari-lock" id="saf-lock">🔒</span>
+        <input class="safurl" id="saf-url" placeholder="Search or enter website name" onkeydown="if(event.key==='Enter')safNav(this.value)" onfocus="this.select()">
+        <span class="safari-reader" onclick="toggleReader()" title="Reader">📖</span>
+      </div>
+      <button class="safari-btn" onclick="safShare()">↗</button>
+      <button class="safari-btn" onclick="toggleSafariSidebar()">☰</button>
+    </div>
+    <div class="safari-main">
+      <div class="safari-sidebar" id="safari-sidebar" style="display:none"></div>
+      <div class="safari-content" id="saf-page"></div>
+    </div>
+  </div>`;
+}
+
+function renderSafariTabs() {
+  const bar = document.getElementById('safari-tabbar');
+  if (!bar) return;
+  bar.innerHTML = safariState.tabs.map(t => {
+    const favicon = t.favicon && t.favicon.length <= 2 && !t.favicon.match(/[\u{1F000}-\u{1FFFF}]/u) ? `<span style="font-weight:700">${t.favicon}</span>` : t.favicon;
+    return `<div class="safari-tab ${t.id===safariState.activeTab?'active':''}" onclick="switchSafariTab(${t.id})">
+      <div class="safari-tab-favicon">${favicon}</div>
+      <div class="safari-tab-title">${t.title}</div>
+      ${safariState.tabs.length>1?`<div class="safari-tab-close" onclick="event.stopPropagation();closeSafariTab(${t.id})">✕</div>`:''}
+    </div>`;
+  }).join('') + `<div class="safari-tab-new" onclick="newSafariTab()" title="New Tab">+</div>`;
+}
+
+function newSafariTab() {
+  const id = ++safariState.tabIdCnt;
+  safariState.tabs.push({ id, url: 'startpage', title: 'Start Page', favicon: '🏠' });
+  safariState.activeTab = id;
+  renderSafariTabs();
+  renderSafariPage();
+}
+
+function switchSafariTab(id) {
+  safariState.activeTab = id;
+  renderSafariTabs();
+  renderSafariPage();
+}
+
+function closeSafariTab(id) {
+  if (safariState.tabs.length === 1) return;
+  safariState.tabs = safariState.tabs.filter(t => t.id !== id);
+  if (safariState.activeTab === id) safariState.activeTab = safariState.tabs[safariState.tabs.length-1].id;
+  renderSafariTabs();
+  renderSafariPage();
+}
+
+function getActiveTab() { return safariState.tabs.find(t => t.id === safariState.activeTab); }
+
+function toggleSafariSidebar() {
+  const sb = document.getElementById('safari-sidebar');
+  if (sb.style.display === 'none') { sb.style.display = 'block'; renderSafariSidebar(); }
+  else sb.style.display = 'none';
+}
+
+function renderSafariSidebar() {
+  const sb = document.getElementById('safari-sidebar');
+  if (!sb) return;
+  const tab = safariState.sidebarTab;
+  sb.innerHTML = `
+    <div class="safari-sb-tabs">
+      <div class="safari-sb-tab ${tab==='bookmarks'?'active':''}" onclick="safariState.sidebarTab='bookmarks';renderSafariSidebar()">📖 Bookmarks</div>
+      <div class="safari-sb-tab ${tab==='history'?'active':''}" onclick="safariState.sidebarTab='history';renderSafariSidebar()">🕐 History</div>
+      <div class="safari-sb-tab ${tab==='reading'?'active':''}" onclick="safariState.sidebarTab='reading';renderSafariSidebar()">📚 Reading</div>
+    </div>
+    ${tab==='bookmarks' ? renderBookmarksSidebar() : tab==='history' ? renderHistorySidebar() : renderReadingSidebar()}
+  `;
+}
+
+function renderBookmarksSidebar() {
+  const folders = {};
+  safariState.bookmarks.forEach(b => { (folders[b.folder] = folders[b.folder] || []).push(b); });
+  return Object.keys(folders).map(f => `
+    <div class="safari-sb-header">${f}</div>
+    ${folders[f].map(b => `<div class="safari-sb-item" onclick="safNav('${b.url}')"><div class="favicon">${b.favicon}</div>${b.name}</div>`).join('')}
+  `).join('');
+}
+
+function renderHistorySidebar() {
+  if (safariState.history.length === 0) return '<div style="color:rgba(255,255,255,.4);font-size:12px;padding:10px">No history yet</div>';
+  return safariState.history.slice().reverse().map(h => `<div class="safari-sb-item" onclick="safNav('${h.url}')"><div class="favicon">${h.favicon||'🌐'}</div>${h.title}</div>`).join('');
+}
+
+function renderReadingSidebar() {
+  if (safariState.readingList.length === 0) return '<div style="color:rgba(255,255,255,.4);font-size:12px;padding:10px">No articles saved</div>';
+  return safariState.readingList.map(r => `<div class="safari-sb-item" onclick="safNav('${r.url}')"><div class="favicon">📰</div><div><div style="color:#fff;font-size:12px">${r.title}</div><div style="color:rgba(255,255,255,.4);font-size:10px">${r.url}</div></div></div>`).join('');
+}
+
+// ======= WEBSITE DATABASE =======
+const websites = {
+  'startpage': () => `
+    <div class="safari-start">
+      <h2>Favorites</h2>
+      <div class="safari-favs">
+        ${safariState.bookmarks.filter(b=>b.folder==='Favorites').map(b => `
+          <div class="safari-fav" onclick="safNav('${b.url}')">
+            <div class="safari-fav-icon" style="background:${b.favicon==='🍎'?'#333':b.favicon==='G'?'#4285f4':b.favicon==='🐙'?'#333':b.favicon==='▶'?'#ff0000':b.favicon==='W'?'#eee':'#ff4500'}">${b.favicon}</div>
+            <span>${b.name}</span>
+          </div>
+        `).join('')}
+      </div>
+      <h3>Frequently Visited</h3>
+      <div class="safari-freq">
+        ${[{t:'Apple - Official Site',u:'apple.com',g:'#333,#555'},{t:'Google Search',u:'google.com',g:'#4285f4,#34a853'},{t:'GitHub: Build software',u:'github.com',g:'#333,#666'},{t:'YouTube - Videos',u:'youtube.com',g:'#ff0000,#cc0000'}].map(f=>`
+          <div class="safari-freq-item" onclick="safNav('${f.u}')">
+            <div class="safari-freq-thumb" style="background:linear-gradient(135deg,${f.g})"></div>
+            <div class="safari-freq-info"><h4>${f.t}</h4><p>${f.u}</p></div>
+          </div>
+        `).join('')}
+      </div>
+      <h3>Privacy Report</h3>
+      <div class="safari-privacy">
+        <div class="safari-privacy-icon">🛡</div>
+        <div class="safari-privacy-info">
+          <h4>Safari prevented 47 trackers from profiling you</h4>
+          <p>In the last seven days, Safari has prevented trackers from following you across websites.</p>
+        </div>
+      </div>
+    </div>
+  `,
+  'apple.com': () => `
+    <div class="safari-web">
+      <div class="safari-hero">
+        <h1>iPhone 16 Pro</h1>
+        <p>Titanium. So strong. So light. So Pro.</p>
+      </div>
+      <div class="safari-grid">
+        ${[{t:'MacBook Air',d:'Lean. Mean. M4 machine.',g:'#667eea,#764ba2'},{t:'iPad Pro',d:'Supercharged by M4.',g:'#43e97b,#38f9d7'},{t:'Apple Watch Ultra 2',d:'Next level adventure.',g:'#fa709a,#fee140'},{t:'AirPods Pro 2',d:'Intelligent noise cancellation.',g:'#f093fb,#f5576c'}].map(c=>`
+          <div class="safari-card">
+            <div class="safari-card-img" style="background:linear-gradient(135deg,${c.g})"></div>
+            <div class="safari-card-body"><h4>${c.t}</h4><p>${c.d}</p></div>
+          </div>
+        `).join('')}
+      </div>
+      <h2 style="margin-top:30px">Latest News</h2>
+      <p>Apple today announced macOS 26 Sequoia, featuring the revolutionary Liquid Glass design language that transforms the entire user experience with translucent, dynamic interfaces.</p>
+      <p>The new design philosophy brings depth, transparency, and fluid animations to every corner of the operating system, creating a more immersive and intuitive computing experience.</p>
+    </div>
+  `,
+  'google.com': () => `
+    <div style="padding:80px 20px;text-align:center">
+      <div style="font-size:80px;font-weight:500;margin-bottom:30px">
+        <span style="color:#4285f4">G</span><span style="color:#ea4335">o</span><span style="color:#fbbc05">o</span><span style="color:#4285f4">g</span><span style="color:#34a853">l</span><span style="color:#ea4335">e</span>
+      </div>
+      <div class="safari-search-box">
+        <input class="safari-search-input" placeholder="Search Google or type a URL" onkeydown="if(event.key==='Enter')googleSearch(this.value)">
+        <div class="safari-search-btns">
+          <div class="safari-search-btn" onclick="googleSearch(document.querySelector('.safari-search-input').value)">Google Search</div>
+          <div class="safari-search-btn" onclick="googleSearch('')">I'm Feeling Lucky</div>
+        </div>
+      </div>
+    </div>
+  `,
+  'github.com': () => `
+    <div class="safari-web">
+      <h1>GitHub</h1>
+      <p>Where the world builds software. 100+ million developers call GitHub home.</p>
+      <h2>Trending repositories</h2>
+      ${[{n:'apple/macos-sequoia',d:'macOS 26 Sequoia source code and documentation',s:'15.2k',l:'Swift'},{n:'microsoft/vscode',d:'Visual Studio Code - Open Source IDE',s:'158k',l:'TypeScript'},{n:'facebook/react',d:'A declarative JavaScript library for building user interfaces',s:'220k',l:'JavaScript'},{n:'tensorflow/tensorflow',d:'An open-source machine learning framework',s:'182k',l:'C++'},{n:'kubernetes/kubernetes',d:'Production-grade container orchestration',s:'106k',l:'Go'}].map(r=>`
+        <div class="safari-gh-repo">
+          <div class="safari-gh-title">${r.n}</div>
+          <div class="safari-gh-desc">${r.d}</div>
+          <div class="safari-gh-meta">
+            <span>⭐ ${r.s}</span>
+            <span style="color:${r.l==='Swift'?'#fa7369':r.l==='TypeScript'?'#3178c6':r.l==='JavaScript'?'#f1e05a':r.l==='C++'?'#f34b7d':'#00ADD8'}">● ${r.l}</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `,
+  'youtube.com': () => `
+    <div class="safari-web">
+      <h1 style="color:#ff0000">▶ YouTube</h1>
+      <p>The world's largest video sharing platform. Watch, share, and create videos.</p>
+      <div class="safari-yt-grid">
+        ${[{t:'macOS 26 Sequoia - Complete Review',c:'Marques Brownlee',v:'2.4M',d:'18:42',g:'#0f2460,#432878'},{t:'Building a Web-Based OS in HTML/CSS',c:'Fireship',v:'892K',d:'12:03',g:'#667eea,#764ba2'},{t:'Liquid Glass Design Tutorial',c:'DesignCourse',v:'456K',d:'22:15',g:'#f093fb,#f5576c'},{t:'JavaScript Full Course 2026',c:'freeCodeCamp',v:'3.1M',d:'4:32:18',g:'#43e97b,#38f9d7'},{t:'Apple M4 Ultra Deep Dive',c:'Linus Tech Tips',v:'1.8M',d:'25:33',g:'#fa709a,#fee140'},{t:'CSS Tricks You Must Know',c:'Kevin Powell',v:'678K',d:'14:28',g:'#4facfe,#00f2fe'}].map(v=>`
+          <div class="safari-yt-video">
+            <div class="safari-yt-thumb" style="background:linear-gradient(135deg,${v.g})">▶<div class="safari-yt-duration">${v.d}</div></div>
+            <div class="safari-yt-title">${v.t}</div>
+            <div class="safari-yt-meta">${v.c} • ${v.v} views</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `,
+  'wikipedia.org': () => `
+    <div class="safari-web">
+      <h1>Wikipedia</h1>
+      <p style="font-size:16px;color:rgba(255,255,255,.6);font-style:italic">The Free Encyclopedia</p>
+      <h2>Welcome to Wikipedia</h2>
+      <p>Wikipedia is a free online encyclopedia, created and edited by volunteers around the world and hosted by the Wikimedia Foundation. With over 60 million articles in 300+ languages, it is the largest and most-read reference work in history.</p>
+      <div class="safari-wiki">
+        <h4>📰 Today's Featured Article</h4>
+        <p><strong>macOS Sequoia</strong> (version 26) is the upcoming major release of Apple's macOS operating system, announced at WWDC 2025. It introduces the revolutionary Liquid Glass design language...</p>
+      </div>
+      <h3>In the news</h3>
+      <p>• Scientists discover high-temperature superconductor at near room temperature.</p>
+      <p>• New space telescope captures first images of exoplanet atmospheres in unprecedented detail.</p>
+      <p>• Global climate summit reaches historic agreement on carbon reduction targets.</p>
+      <h3>Did you know?</h3>
+      <p>...that the first computer bug was an actual moth found in a Harvard Mark II computer in 1947?</p>
+      <p>...that the World Wide Web was invented by Tim Berners-Lee in 1989 while working at CERN?</p>
+    </div>
+  `,
+  'reddit.com': () => `
+    <div class="safari-web">
+      <h1 style="color:#ff4500">reddit</h1>
+      <p>The front page of the internet. Dive into whatever you're passionate about.</p>
+      <h2>Hot Posts</h2>
+      ${[{t:'Just built a macOS clone entirely in HTML/CSS/JS - what do you think?',sub:'r/webdev',up:'15.2k',c:'842',author:'u/coder_pro',time:'6h'},{t:'Apple M4 Ultra benchmarks are absolutely insane',sub:'r/apple',up:'22.1k',c:'1.5k',author:'u/tech_enthusiast',time:'4h'},{t:'Liquid Glass is the best design language Apple has made in years',sub:'r/mac',up:'8.4k',c:'567',author:'u/design_fan',time:'12h'},{t:'TIL that JavaScript was created in just 10 days',sub:'r/todayilearned',up:'34.2k',c:'2.1k',author:'u/curious_mind',time:'8h'},{t:'This CSS trick will blow your mind 🤯',sub:'r/programming',up:'5.7k',c:'234',author:'u/css_wizard',time:'3h'}].map(p=>`
+        <div class="safari-reddit-post">
+          <div class="safari-reddit-votes">
+            <div class="safari-reddit-vote-btn">▲</div>
+            <div>${p.up}</div>
+            <div class="safari-reddit-vote-btn">▼</div>
+          </div>
+          <div class="safari-reddit-content">
+            <div class="safari-reddit-meta">${p.sub} • Posted by ${p.author} ${p.time} ago</div>
+            <div class="safari-reddit-title">${p.t}</div>
+            <div class="safari-reddit-meta">💬 ${p.c} comments • Share • Save</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `,
+  'stackoverflow.com': () => `
+    <div class="safari-web">
+      <h1>Stack Overflow</h1>
+      <p>Where developers learn, share, and build careers. The largest online community for developers.</p>
+      <h2>Top Questions</h2>
+      ${[{t:'How to center a div in CSS (2026 edition)?',v:'245k',a:'42',tags:['css','flexbox','grid']},{t:'What is the difference between let, const, and var?',v:'892k',a:'28',tags:['javascript','es6']},{t:'How to handle async/await errors properly?',v:'156k',a:'19',tags:['javascript','async']},{t:'Best practices for React hooks in 2026',v:'78k',a:'15',tags:['react','hooks']}].map(q=>`
+        <div style="background:rgba(40,40,45,.6);border-radius:8px;padding:14px;margin-bottom:10px;border:.5px solid rgba(255,255,255,.05);cursor:pointer">
+          <div style="color:#0a84ff;font-size:15px;margin-bottom:6px">${q.t}</div>
+          <div style="display:flex;gap:14px;color:rgba(255,255,255,.5);font-size:11px;margin-bottom:6px">
+            <span>✓ ${q.a} answers</span><span>👁 ${q.v} views</span>
+          </div>
+          <div style="display:flex;gap:6px">${q.tags.map(t=>`<span style="padding:2px 8px;background:rgba(10,132,255,.2);border-radius:4px;font-size:10px;color:#5ac8fa">${t}</span>`).join('')}</div>
+        </div>
+      `).join('')}
+    </div>
+  `,
+  'twitter.com': () => `
+    <div class="safari-web">
+      <h1>𝕏 (Twitter)</h1>
+      <p>See what's happening in the world right now.</p>
+      <h2>Trending</h2>
+      ${[{t:'#macOS26',p:'125K posts'},{t:'#WWDC25',p:'89K posts'},{t:'Apple Intelligence',p:'67K posts'},{t:'Liquid Glass',p:'45K posts'}].map(t=>`
+        <div style="background:rgba(40,40,45,.6);border-radius:8px;padding:12px;margin-bottom:8px;cursor:pointer">
+          <div style="color:#fff;font-size:14px;font-weight:600">${t.t}</div>
+          <div style="color:rgba(255,255,255,.5);font-size:12px;margin-top:4px">${t.p}</div>
+        </div>
+      `).join('')}
+    </div>
+  `
+};
+
+function googleSearch(query) {
+  if (!query) query = 'macOS 26';
+  const results = [
+    { url: 'apple.com', title: 'macOS 26 Sequoia - Apple', desc: 'The next generation of macOS brings Liquid Glass design, Apple Intelligence, and revolutionary new features to your Mac.' },
+    { url: 'wikipedia.org', title: 'macOS Sequoia - Wikipedia', desc: 'macOS Sequoia (version 26) is the upcoming major release of Apple\'s macOS operating system, announced at WWDC 2025.' },
+    { url: 'github.com', title: 'GitHub - apple/macos-sequoia', desc: 'Official repository for macOS 26 Sequoia documentation and developer resources.' },
+    { url: 'youtube.com', title: 'macOS 26 Complete Review - YouTube', desc: 'Our comprehensive review of macOS Sequoia covering all new features, performance improvements, and design changes.' },
+    { url: 'reddit.com', title: 'r/mac - macOS 26 Discussion : reddit', desc: 'Join the community discussion about the latest macOS release. Share your thoughts, tips, and experiences.' },
+  ];
+  const page = document.getElementById('saf-page');
+  page.innerHTML = `
+    <div class="safari-web">
+      <div style="font-size:40px;font-weight:500;margin-bottom:20px">
+        <span style="color:#4285f4">G</span><span style="color:#ea4335">o</span><span style="color:#fbbc05">o</span><span style="color:#4285f4">g</span><span style="color:#34a853">l</span><span style="color:#ea4335">e</span>
+      </div>
+      <p style="color:rgba(255,255,255,.5);font-size:12px;margin-bottom:20px">About 1,240,000,000 results (0.42 seconds)</p>
+      <div class="safari-results">
+        ${results.map(r => `
+          <div class="safari-result-item" onclick="safNav('${r.url}')">
+            <div class="safari-result-url">${r.url}</div>
+            <div class="safari-result-title">${r.title}</div>
+            <div class="safari-result-desc">${r.desc}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderSafariPage() {
+  const tab = getActiveTab();
+  if (!tab) return;
+  const page = document.getElementById('saf-page');
+  const urlBar = document.getElementById('saf-url');
+  if (!page || !urlBar) return;
+  
+  urlBar.value = tab.url === 'startpage' ? '' : tab.url;
+  
+  if (websites[tab.url]) {
+    page.innerHTML = websites[tab.url]();
+  } else if (tab.url === 'startpage') {
+    page.innerHTML = websites['startpage']();
+  } else {
+    // Default fallback for unknown URLs
+    page.innerHTML = `<div class="safari-web"><h1>🌐 ${tab.url}</h1><p>This website is not available in the demo.</p><p style="margin-top:20px">Try visiting: apple.com, google.com, github.com, youtube.com, wikipedia.org, reddit.com, stackoverflow.com, or twitter.com</p></div>`;
+  }
+  
+  renderSafariTabs();
+}
+
+function safNav(url) {
+  if (!SYS.wifi.on || !SYS.wifi.connected) {
+    showAlert('No Internet', 'Please connect to a Wi-Fi network first');
+    return;
+  }
+  if (!url) return;
+  url = url.toLowerCase().replace(/^https?:\/\//, '').replace(/\/$/, '');
+  if (url.includes('google') && url.includes('?q=')) {
+    const q = url.split('q=')[1].split('&')[0];
+    googleSearch(decodeURIComponent(q));
+    const tab = getActiveTab();
+    tab.url = url;
+    tab.title = q + ' - Google Search';
+    tab.favicon = 'G';
+    safariState.history.push({ url, title: tab.title, favicon: 'G' });
+    renderSafariTabs();
+    return;
+  }
+  const tab = getActiveTab();
+  if (!tab) return;
+  tab.url = url;
+  
+  // Determine favicon and title
+  const bookmarkMatch = safariState.bookmarks.find(b => url.includes(b.url.split('.')[0]));
+  if (bookmarkMatch) {
+    tab.favicon = bookmarkMatch.favicon;
+    tab.title = bookmarkMatch.name;
+  } else {
+    tab.favicon = '🌐';
+    tab.title = url.split('.')[0];
+  }
+  
+  safariState.history.push({ url, title: tab.title, favicon: tab.favicon });
+  renderSafariPage();
+  if (safariState.sidebarTab === 'history') renderSafariSidebar();
+}
+
+function safBack() {
+  if (safariState.history.length > 1) {
+    safariState.history.pop();
+    const last = safariState.history[safariState.history.length - 1];
+    if (last) safNav(last.url);
+  }
+}
+
+function safFwd() { showAlert('Safari', 'Forward navigation not available in demo'); }
+
+function safReload() { renderSafariPage(); }
+
+function safShare() {
+  const tab = getActiveTab();
+  if (!tab) return;
+  if (navigator.clipboard && tab.url !== 'startpage') {
+    navigator.clipboard.writeText('https://' + tab.url).then(() => showAlert('Share', 'Link copied to clipboard: ' + tab.url)).catch(() => showAlert('Share', 'Share: ' + tab.url));
+  } else {
+    showAlert('Share', 'Share: ' + (tab.url || 'Start Page'));
+  }
+}
+
+function toggleReader() {
+  showAlert('Reader Mode', 'Reader view would simplify this page for reading');
+}
+
+// ======= NOTES =======
+function getNotes(){return `<div class="noteswrap"><div class="nsidebar"><div class="nshdr"><span>All Notes (${notes.length})</span><button class="nnew" onclick="addNote()">+</button></div><div class="nsearch"><input placeholder="Search" oninput="searchNotes(this.value)"></div><div class="nlist" id="notes-list">${notes.map(n=>`<div class="nitem ${n.id===activeNote?'active':''}" onclick="selNote(${n.id})"><div class="nitem-title">${n.title}</div><div class="nitem-prev">${n.content.substring(0,35)}</div></div>`).join('')}</div></div><div class="neditor"><div class="neditor-toolbar"><button onclick="noteFormat('bold')"><b>B</b></button><button onclick="noteFormat('italic')"><i>I</i></button></div><textarea id="notes-ta" oninput="updNote(this.value)">${notes.find(n=>n.id===activeNote)?.content||''}</textarea></div></div>`}
+function selNote(id){activeNote=id;const n=notes.find(x=>x.id===id),ta=document.getElementById('notes-ta');if(ta&&n)ta.value=n.content;document.querySelectorAll('.nitem').forEach(el=>{el.classList.remove('active');if(el.onclick&&el.onclick.toString().includes(id))el.classList.add('active')})}
+function updNote(v){const n=notes.find(x=>x.id===activeNote);if(n){n.content=v;n.title=v.split('\n')[0].substring(0,30)||'Untitled'}updNotesList()}
+function addNote(){const nn={id:Date.now(),title:'New Note',content:''};notes.unshift(nn);activeNote=nn.id;const ta=document.getElementById('notes-ta');if(ta)ta.value='';updNotesList();if(ta)ta.focus()}
+function searchNotes(q){const f=q?notes.filter(n=>n.title.toLowerCase().includes(q.toLowerCase())||n.content.toLowerCase().includes(q.toLowerCase())):notes;const l=document.getElementById('notes-list');if(l)l.innerHTML=f.map(n=>`<div class="nitem ${n.id===activeNote?'active':''}" onclick="selNote(${n.id})"><div class="nitem-title">${n.title}</div><div class="nitem-prev">${n.content.substring(0,35)}</div></div>`).join('')}
+function noteFormat(fmt){const ta=document.getElementById('notes-ta');if(!ta)return;const s=ta.selectionStart,e=ta.selectionEnd,t=ta.value.substring(s,e);let w=fmt==='bold'?`**${t}**`:`_${t}_`;ta.value=ta.value.substring(0,s)+w+ta.value.substring(e);updNote(ta.value)}
+function updNotesList(){const l=document.getElementById('notes-list');if(l)l.innerHTML=notes.map(n=>`<div class="nitem ${n.id===activeNote?'active':''}" onclick="selNote(${n.id})"><div class="nitem-title">${n.title}</div><div class="nitem-prev">${n.content.substring(0,35)}</div></div>`).join('')}
+
+// ======= CALC =======
+function getCalc(){return `<div class="calcwrap"><div class="calcd" id="calc-d">0</div><div class="calcg"><button class="cb fn" onclick="calcFn('AC')">AC</button><button class="cb fn" onclick="calcFn('±')">±</button><button class="cb fn" onclick="calcFn('%')">%</button><button class="cb op" data-op="/" onclick="calcOp('/')">÷</button><button class="cb" onclick="calcNum('7')">7</button><button class="cb" onclick="calcNum('8')">8</button><button class="cb" onclick="calcNum('9')">9</button><button class="cb op" data-op="*" onclick="calcOp('*')">×</button><button class="cb" onclick="calcNum('4')">4</button><button class="cb" onclick="calcNum('5')">5</button><button class="cb" onclick="calcNum('6')">6</button><button class="cb op" data-op="-" onclick="calcOp('-')">−</button><button class="cb" onclick="calcNum('1')">1</button><button class="cb" onclick="calcNum('2')">2</button><button class="cb" onclick="calcNum('3')">3</button><button class="cb op" data-op="+" onclick="calcOp('+')">+</button><button class="cb zero" onclick="calcNum('0')">0</button><button class="cb" onclick="calcNum('.')">.</button><button class="cb op" onclick="calcEq()">=</button></div></div>`}
+function calcNum(n){if(calc.reset){calc.d='';calc.reset=false}if(n==='.'&&calc.d.includes('.'))return;if(calc.d==='0'&&n!=='.')calc.d=n;else calc.d+=n;updCalc()}
+function calcOp(op){if(calc.p!==null&&!calc.reset)calcEq();calc.p=parseFloat(calc.d);calc.op=op;calc.reset=true;document.querySelectorAll('.cb.op').forEach(b=>b.classList.remove('op-active'));const b=document.querySelector(`.cb.op[data-op="${op}"]`);if(b)b.classList.add('op-active')}
+function calcEq(){if(calc.p===null||calc.op===null)return;const c=parseFloat(calc.d);let r;switch(calc.op){case'+':r=calc.p+c;break;case'-':r=calc.p-c;break;case'*':r=calc.p*c;break;case'/':r=c!==0?calc.p/c:'Error';break}calc.d=typeof r==='number'?String(parseFloat(r.toFixed(10))):r;calc.p=null;calc.op=null;calc.reset=true;document.querySelectorAll('.cb.op').forEach(b=>b.classList.remove('op-active'));updCalc()}
+function calcFn(fn){switch(fn){case'AC':calc={d:'0',p:null,op:null,reset:false};break;case'±':if(calc.d!=='0')calc.d=String(-parseFloat(calc.d));break;case'%':calc.d=String(parseFloat(calc.d)/100);break}document.querySelectorAll('.cb.op').forEach(b=>b.classList.remove('op-active'));updCalc()}
+function updCalc(){const e=document.getElementById('calc-d');if(e){e.textContent=calc.d;e.style.fontSize=calc.d.length>9?'34px':'44px'}}
+
+// =============== AUTHENTIC TERMINAL ===============
+const termFS = {
+  '/Users/user': { type: 'dir', children: ['Desktop', 'Documents', 'Downloads', 'Music', 'Pictures', 'Projects', '.zshrc', '.bash_history', 'readme.txt'] },
+  '/Users/user/Desktop': { type: 'dir', children: ['screenshot.png', 'notes.md'] },
+  '/Users/user/Documents': { type: 'dir', children: ['Work', 'Personal', 'report.pdf', 'budget.xlsx'] },
+  '/Users/user/Downloads': { type: 'dir', children: ['installer.dmg', 'archive.zip', 'image.png'] },
+  '/Users/user/Music': { type: 'dir', children: [] },
+  '/Users/user/Pictures': { type: 'dir', children: ['vacation.jpg'] },
+  '/Users/user/Projects': { type: 'dir', children: ['macos-clone', 'ai-assistant'] },
+  '/Users/user/.zshrc': { type: 'file', content: '# .zshrc\nexport PATH=$PATH:/usr/local/bin\nalias ll="ls -la"\nalias gs="git status"' },
+  '/Users/user/readme.txt': { type: 'file', content: 'Welcome to macOS 26!\n\nThis is a simulated terminal environment.\nType "help" for available commands.' }
+};
+
+function termPrompt() {
+  const shortCwd = SYS.cwd.replace('/Users/user', '~');
+  return `<span class="tprompt"><span class="tprompt-user">user</span><span class="tprompt-at">@</span><span class="tprompt-host">MacBook-Pro</span> <span class="tprompt-path">${shortCwd}</span> <span class="tprompt-sym">% </span></span>`;
+}
+
+function getTerm() {
+  const now = new Date();
+  return `<div class="termwrap" id="term-body" onclick="document.getElementById('term-input')?.focus()">
+<div class="tline"><span class="tgray">Last login: ${now.toLocaleString('en-US', { weekday:'short', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit' })} on ttys000</span></div>
+<div class="tinput" style="margin-top:4px">${termPrompt()}<input class="term-input" id="term-input" autofocus onkeydown="termKey(event)"></div>
+</div>`;
+}
+
+function termKey(e) {
+  if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (termHist.length && termIdx < termHist.length - 1) { termIdx++; e.target.value = termHist[termHist.length - 1 - termIdx]; }
+    return;
+  }
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    if (termIdx > 0) { termIdx--; e.target.value = termHist[termHist.length - 1 - termIdx]; }
+    else { termIdx = -1; e.target.value = ''; }
+    return;
+  }
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    // Tab completion
+    const partial = e.target.value;
+    const cmds = ['help','ls','cd','pwd','mkdir','touch','rm','cat','echo','whoami','hostname','date','cal','neofetch','top','ps','clear','history','man','grep','find','chmod','ping','ifconfig','curl','nano','open','pbcopy','uname','df','uptime','say','open'];
+    const match = cmds.find(c => c.startsWith(partial));
+    if (match) e.target.value = match;
+    return;
+  }
+  if (e.key === 'Enter') termExec();
+  if (e.key === 'l' && e.ctrlKey) { e.preventDefault(); document.getElementById('term-body').innerHTML = `<div class="tinput">${termPrompt()}<input class="term-input" id="term-input" autofocus onkeydown="termKey(event)"></div>`; setTimeout(() => document.getElementById('term-input').focus(), 0); }
+}
+
+function termExec() {
+  const inp = document.getElementById('term-input');
+  const body = document.getElementById('term-body');
+  if (!inp || !body) return;
+  const cmdLine = inp.value;
+  const il = body.querySelector('.tinput');
+  if (il) il.remove();
+  if (cmdLine.trim()) { termHist.push(cmdLine); termIdx = -1; }
+  
+  // Echo command
+  const cl = document.createElement('div');
+  cl.className = 'tline';
+  cl.innerHTML = termPrompt() + `<span>${escapeHtml(cmdLine)}</span>`;
+  body.appendChild(cl);
+  
+  const output = runTermCommand(cmdLine);
+  
+  if (output !== null && output !== undefined && output !== '') {
+    const oe = document.createElement('div');
+    oe.className = 'tline';
+    oe.style.whiteSpace = 'pre-wrap';
+    oe.innerHTML = output;
+    body.appendChild(oe);
+  }
+  
+  // New prompt
+  const ni = document.createElement('div');
+  ni.className = 'tinput';
+  ni.style.marginTop = '4px';
+  ni.innerHTML = `${termPrompt()}<input class="term-input" id="term-input" autofocus onkeydown="termKey(event)">`;
+  body.appendChild(ni);
+  document.getElementById('term-input').focus();
+  body.scrollTop = body.scrollHeight;
+}
+
+function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function runTermCommand(cmdLine) {
+  const trimmed = cmdLine.trim();
+  if (!trimmed) return '';
+  
+  // Parse command, handling pipes/aliases minimally
+  const tokens = trimmed.match(/(?:[^\s"']+|"[^"]*"|'[^']*')+/g) || [];
+  let cmd = tokens[0];
+  let args = tokens.slice(1).map(a => a.replace(/^["']|["']$/g, ''));
+  
+  // Aliases
+  if (cmd === 'll') { cmd = 'ls'; args = ['-la', ...args]; }
+  if (cmd === 'la') { cmd = 'ls'; args = ['-a', ...args]; }
+  if (cmd === 'gs') { cmd = 'echo'; args = ['On branch main, nothing to commit']; }
+  
+  switch(cmd) {
+    case 'help':
+      return `<span class="tcyan tbold">Available commands:</span>
+<span class="tgreen">  Navigation:</span>   ls, cd, pwd, find
+<span class="tgreen">  Files:</span>        mkdir, touch, rm, cat, cp, mv, chmod
+<span class="tgreen">  System:</span>       whoami, hostname, date, cal, uname, uptime, df
+<span class="tgreen">  Processes:</span>    top, ps, kill
+<span class="tgreen">  Network:</span>      ping, ifconfig, curl
+<span class="tgreen">  Tools:</span>        echo, grep, man, nano, open, pbcopy, say
+<span class="tgreen">  Display:</span>      clear, neofetch, history
+<span class="tgreen">  Shortcuts:</span>    Ctrl+L (clear), Tab (autocomplete), ↑/↓ (history)`;
+    
+    case 'ls': {
+      const showHidden = args.includes('-a') || args.includes('-la') || args.includes('-al');
+      const longForm = args.includes('-l') || args.includes('-la') || args.includes('-al');
+      const pathArg = args.find(a => !a.startsWith('-'));
+      const targetPath = pathArg ? resolvePath(pathArg) : SYS.cwd;
+      const dir = termFS[targetPath];
+      if (!dir) return `<span class="tred">ls: ${pathArg}: No such file or directory</span>`;
+      if (dir.type !== 'dir') return `<span class="tred">ls: ${pathArg}: Not a directory</span>`;
+      let items = [...dir.children];
+      if (showHidden) items = ['.', '..', ...items];
+      else items = items.filter(i => !i.startsWith('.'));
+      
+      if (longForm) {
+        const lines = [`<span class="tbold">total ${items.length * 8}</span>`];
+        items.forEach(name => {
+          const fullPath = targetPath + (targetPath.endsWith('/') ? '' : '/') + name;
+          const isDir = termFS[fullPath] && termFS[fullPath].type === 'dir' || name === '.' || name === '..';
+          const perm = isDir ? 'drwxr-xr-x' : '-rw-r--r--';
+          const size = isDir ? '  256' : ' 1024';
+          const date = 'Jun  2 14:30';
+          const color = isDir ? 'tblue tbold' : (name.endsWith('.txt') || name.endsWith('.md') || name.endsWith('.zshrc') ? 'tgreen' : '');
+          lines.push(`${perm}  1 user staff ${size} ${date} <span class="${color}">${escapeHtml(name)}</span>`);
+        });
+        return lines.join('\n');
+      }
+      return items.map(name => {
+        const fullPath = targetPath + (targetPath.endsWith('/') ? '' : '/') + name;
+        const isDir = termFS[fullPath] && termFS[fullPath].type === 'dir' || name === '.' || name === '..';
+        const color = isDir ? 'tblue tbold' : (name.endsWith('.txt') || name.endsWith('.md') ? 'tgreen' : '');
+        return `<span class="${color}">${escapeHtml(name)}</span>`;
+      }).join('   ');
+    }
+    
+    case 'cd': {
+      const target = args[0] || '~';
+      let newPath;
+      if (target === '~' || target === '') newPath = '/Users/user';
+      else if (target === '-' && this.prevCwd) newPath = this.prevCwd;
+      else newPath = resolvePath(target);
+      
+      if (newPath === '/Users/user') { SYS.cwd = newPath; return ''; }
+      if (!termFS[newPath]) return `<span class="tred">cd: no such file or directory: ${escapeHtml(target)}</span>`;
+      if (termFS[newPath].type !== 'dir') return `<span class="tred">cd: not a directory: ${escapeHtml(target)}</span>`;
+      SYS.cwd = newPath;
+      return '';
+    }
+    
+    case 'pwd': return SYS.cwd;
+    
+    case 'mkdir': {
+      if (!args[0]) return `<span class="tred">mkdir: missing operand</span>`;
+      const newPath = resolvePath(args[0]);
+      if (termFS[newPath]) return `<span class="tred">mkdir: ${args[0]}: File exists</span>`;
+      termFS[newPath] = { type: 'dir', children: [] };
+      const parent = termFS[SYS.cwd];
+      if (parent && parent.type === 'dir') parent.children.push(args[0]);
+      return '';
+    }
+    
+    case 'touch': {
+      if (!args[0]) return `<span class="tred">touch: missing file operand</span>`;
+      const newPath = resolvePath(args[0]);
+      if (!termFS[newPath]) {
+        termFS[newPath] = { type: 'file', content: '' };
+        const parent = termFS[SYS.cwd];
+        if (parent && parent.type === 'dir') parent.children.push(args[0]);
+      }
+      return '';
+    }
+    
+    case 'rm': {
+      const force = args.includes('-f') || args.includes('-rf') || args.includes('-fr');
+      const recursive = args.includes('-r') || args.includes('-rf') || args.includes('-fr');
+      const target = args.find(a => !a.startsWith('-'));
+      if (!target) return `<span class="tred">rm: missing operand</span>`;
+      const targetPath = resolvePath(target);
+      if (!termFS[targetPath]) return `<span class="tred">rm: ${target}: No such file or directory</span>`;
+      if (termFS[targetPath].type === 'dir' && !recursive) return `<span class="tred">rm: ${target}: is a directory</span>`;
+      delete termFS[targetPath];
+      const parent = termFS[SYS.cwd];
+      if (parent && parent.type === 'dir') parent.children = parent.children.filter(c => c !== target);
+      return '';
+    }
+    
+    case 'cat': {
+      if (!args[0]) return `<span class="tred">cat: missing file operand</span>`;
+      const targetPath = resolvePath(args[0]);
+      if (!termFS[targetPath]) return `<span class="tred">cat: ${args[0]}: No such file or directory</span>`;
+      if (termFS[targetPath].type === 'dir') return `<span class="tred">cat: ${args[0]}: Is a directory</span>`;
+      return escapeHtml(termFS[targetPath].content);
+    }
+    
+    case 'echo': {
+      const text = args.join(' ');
+      if (text.includes('>')) {
+        const [content, file] = text.split('>').map(s => s.trim());
+        const targetPath = resolvePath(file);
+        termFS[targetPath] = { type: 'file', content: content.replace(/^["']|["']$/g, '') };
+        const parent = termFS[SYS.cwd];
+        if (parent && parent.type === 'dir' && !parent.children.includes(file)) parent.children.push(file);
+        return '';
+      }
+      return escapeHtml(text.replace(/^["']|["']$/g, '').replace(/\$(\w+)/g, (m, v) => ({ USER:'user', HOME:'/Users/user', PATH:'/usr/local/bin:/usr/bin:/bin', SHELL:'/bin/zsh', PWD:SYS.cwd }[v] || '')));
+    }
+    
+    case 'whoami': return 'user';
+    case 'hostname': return 'MacBook-Pro.local';
+    case 'date': return new Date().toString();
+    case 'uname': {
+      if (args.includes('-a')) return 'Darwin MacBook-Pro.local 26.0.0 Darwin Kernel Version 26.0.0: RELEASE_ARM64_T6000 arm64';
+      if (args.includes('-r')) return '26.0.0';
+      if (args.includes('-m')) return 'arm64';
+      return 'Darwin';
+    }
+    case 'uptime': {
+      const now = new Date();
+      return ` ${now.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' })}  up 3 days,  4:42, 2 users, load averages: 1.23 1.45 1.67`;
+    }
+    case 'df': {
+      return `Filesystem     1K-blocks      Used Available Use% Mounted on
+/dev/disk3s1s1  994662584  256789012  737873572  26% /
+devfs                 217       217          0 100% /dev
+/dev/disk3s6       994662584  256789012  737873572  26% /System/Volumes/Data
+map -hosts              0         0          0 100% /net
+map auto_home           0         0          0 100% /home`;
+    }
+    case 'cal': {
+      const n = new Date();
+      const m = n.toLocaleString('default', { month: 'long' });
+      const y = n.getFullYear();
+      const fd = new Date(y, n.getMonth(), 1).getDay();
+      const dim = new Date(y, n.getMonth() + 1, 0).getDate();
+      let lines = [`     <span class="tbold">${m} ${y}</span>`, 'Su Mo Tu We Th Fr Sa'];
+      let line = '   '.repeat(fd);
+      for (let d = 1; d <= dim; d++) {
+        const s = (d < 10 ? ' ' : '') + d;
+        if (d === n.getDate()) line += `<span class="tbold" style="background:#0a84ff;color:#fff;padding:0 2px;border-radius:2px">${s}</span> `;
+        else line += s + ' ';
+        if ((fd + d) % 7 === 0) { lines.push(line); line = ''; }
+      }
+      if (line) lines.push(line);
+      return lines.join('\n');
+    }
+    case 'neofetch': return `<span class="tcyan">                    'c.</span>          <span class="tbold">user@MacBook-Pro</span>
+<span class="tcyan">                 ,xNMM.</span>          <span class="tbold">----------------</span>
+<span class="tcyan">               .OMMMMo</span>           <span class="tgreen">OS:</span> macOS 26.0 Sequoia arm64
+<span class="tcyan">               OMMM0,</span>            <span class="tgreen">Host:</span> MacBook Pro (M4)
+<span class="tcyan">     .;loddo:' loolloddol;.</span>     <span class="tgreen">Kernel:</span> 26.0.0
+<span class="tcyan">   cKMMMMMMMMMMNWMMMMMMMMMM0:</span>   <span class="tgreen">Uptime:</span> 3 days, 4 hours, 42 mins
+<span class="tcyan"> .KMMMMMMMMMMMMMMMMMMMMMMMWd.</span>   <span class="tgreen">Packages:</span> 142 (brew)
+<span class="tcyan"> XMMMMMMMMMMMMMMMMMMMMMMMX.</span>     <span class="tgreen">Shell:</span> zsh 5.9
+<span class="tcyan">;MMMMMMMMMMMMMMMMMMMMMMMM:</span>      <span class="tgreen">Resolution:</span> ${innerWidth}x${innerHeight}
+<span class="tcyan">:MMMMMMMMMMMMMMMMMMMMMMMM:</span>      <span class="tgreen">DE:</span> Aqua
+<span class="tcyan">.MMMMMMMMMMMMMMMMMMMMMMMMX.</span>     <span class="tgreen">WM:</span> Quartz Compositor
+<span class="tcyan"> kMMMMMMMMMMMMMMMMMMMMMMMMWd.</span>   <span class="tgreen">Terminal:</span> Apple_Terminal
+<span class="tcyan"> .XMMMMMMMMMMMMMMMMMMMMMMMMMMk</span>  <span class="tgreen">CPU:</span> Apple M4 Pro (12) @ 3.80GHz
+<span class="tcyan">  .XMMMMMMMMMMMMMMMMMMMMMMMMK.</span>  <span class="tgreen">GPU:</span> Apple M4 Pro (19-core)
+<span class="tcyan">    kMMMMMMMMMMMMMMMMMMMMMMd</span>    <span class="tgreen">Memory:</span> 8192MiB / 32768MiB
+<span class="tcyan">     ;KMMMMMMMWXXWMMMKl.</span>
+<span class="tcyan">       .cooc,.    .,coo:.</span>`;
+    
+    case 'top': return `Processes: 342 total, 3 running, 339 sleeping, 1847 threads
+Load Avg: 1.23, 1.45, 1.67
+CPU usage: 4.52% user, 2.15% sys, 93.33% idle
+SharedLibs: 412M resident, 115M data, 72M linkedit
+MemRegions: 523847 total, 8192M resident, 124M private, 2048M shared
+PhysMem: 18G used (2451M wired), 14G unused
+
+<span class="tbold">PID   COMMAND      %CPU  TIME     MEM   STATE</span>
+1234  Safari       8.4   02:34:12 482M  running
+5678  Finder       2.1   00:12:45 128M  sleeping
+9012  Terminal     1.3   00:08:22 64M   running
+3456  Music        0.8   00:45:33 192M  sleeping
+7890  Weather      0.4   00:02:11 32M   sleeping`;
+    
+    case 'ps': return `  PID TTY           TIME CMD
+  521 ttys000    0:00.08 -zsh
+ 1342 ttys000    0:00.01 ps aux
+  101 ??         0:12.45 /sbin/launchd
+  452 ??         0:34.22 /System/Library/CoreServices/Dock.app`;
+    
+    case 'clear':
+      document.getElementById('term-body').innerHTML = `<div class="tinput">${termPrompt()}<input class="term-input" id="term-input" autofocus onkeydown="termKey(event)"></div>`;
+      setTimeout(() => document.getElementById('term-input').focus(), 0);
+      return null;
+    
+    case 'history':
+      return termHist.map((h, i) => `<span class="tgray">${String(i + 1).padStart(4)}</span>  ${escapeHtml(h)}`).join('\n') || '<span class="tgray">No commands in history</span>';
+    
+    case 'man': {
+      if (!args[0]) return `<span class="tred">What manual page do you want?</span>\nFor example, try 'man man'.`;
+      const manPages = {
+        'ls': '<span class="tbold">LS(1)</span>                    BSD General Commands Manual                   <span class="tbold">LS(1)</span>\n\n<span class="tbold">NAME</span>\n     <span class="tgreen">ls</span> -- list directory contents\n\n<span class="tbold">SYNOPSIS</span>\n     <span class="tgreen">ls</span> [-ABCFGHLOPRSTUW@abcdefghiklmnopqrstuwx1%] [file ...]\n\n<span class="tbold">DESCRIPTION</span>\n     For each operand that names a file of a type other than directory, ls\n     displays its name as well as any requested, associated information.',
+        'cd': '<span class="tbold">CD(1)</span>                    BSD General Commands Manual                   <span class="tbold">CD(1)</span>\n\n<span class="tbold">NAME</span>\n     <span class="tgreen">cd</span> -- change working directory\n\n<span class="tbold">SYNOPSIS</span>\n     <span class="tgreen">cd</span> [-L|-P] [dir]\n\n<span class="tbold">DESCRIPTION</span>\n     The cd utility changes the current working directory.',
+      };
+      return manPages[args[0]] || `<span class="tred">No manual entry for ${escapeHtml(args[0])}</span>`;
+    }
+    
+    case 'grep': {
+      if (args.length < 2) return `<span class="tred">usage: grep pattern [file ...]</span>`;
+      const pattern = args[0];
+      const file = resolvePath(args[1]);
+      if (!termFS[file]) return `<span class="tred">grep: ${args[1]}: No such file or directory</span>`;
+      if (termFS[file].type !== 'file') return `<span class="tred">grep: ${args[1]}: Is a directory</span>`;
+      const regex = new RegExp(pattern, 'gi');
+      return termFS[file].content.split('\n').filter(l => l.match(regex)).map(l => escapeHtml(l).replace(regex, m => `<span class="tred tbold">${m}</span>`)).join('\n') || `<span class="tgray">No matches found</span>`;
+    }
+    
+    case 'find': {
+      const target = args[0] || '.';
+      const targetPath = resolvePath(target);
+      if (!termFS[targetPath]) return `<span class="tred">find: ${target}: No such file or directory</span>`;
+      const results = [];
+      function walk(path, name) {
+        results.push(path);
+        const node = termFS[path];
+        if (node && node.type === 'dir') node.children.forEach(c => walk(path + '/' + c, c));
+      }
+      walk(targetPath, target);
+      return results.join('\n');
+    }
+    
+    case 'chmod': return args.length >= 2 ? '' : '<span class="tred">chmod: missing operand</span>';
+    case 'cp': return args.length >= 2 ? '' : '<span class="tred">cp: missing operand</span>';
+    case 'mv': return args.length >= 2 ? '' : '<span class="tred">mv: missing operand</span>';
+    
+    case 'ping': {
+      const host = args[0];
+      if (!host) return `<span class="tred">usage: ping hostname</span>`;
+      let out = `<span class="tbold">PING ${escapeHtml(host)}: 56 data bytes</span>\n`;
+      for (let i = 0; i < 4; i++) {
+        const time = (10 + Math.random() * 40).toFixed(3);
+        out += `64 bytes from ${escapeHtml(host)}: icmp_seq=${i} ttl=64 time=${time} ms\n`;
+      }
+      out += `\n--- ${escapeHtml(host)} ping statistics ---\n4 packets transmitted, 4 packets received, 0.0% packet loss\nround-trip min/avg/max = 10.123/23.456/45.789 ms`;
+      return out;
+    }
+    
+    case 'ifconfig': {
+      const wifiIp = SYS.wifi.on && SYS.wifi.connected ? '192.168.1.' + Math.floor(Math.random() * 200 + 50) : 'no IP';
+      return `<span class="tbold">lo0:</span> flags=8049<UP,LOOPBACK,RUNNING,MULTICAST> mtu 16384
+\tinet 127.0.0.1 netmask 0xff000000
+\tinet6 ::1 prefixlen 128
+<span class="tbold">en0:</span> flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
+\toptions=6463<RXCSUM,TXCSUM,TSO4,TSO6,CHANNEL_IO,PARTIAL_CSUM,ZEROINVERT_CSUM>
+\tether aa:bb:cc:dd:ee:ff
+\tinet ${wifiIp} netmask 0xffffff00 broadcast 192.168.1.255
+\tinet6 fe80::1%en0 prefixlen 64
+\tnd6 options=201<PERFORMNUD,DAD>
+\tmedia: autoselect
+\tstatus: ${SYS.wifi.on && SYS.wifi.connected ? 'active' : 'inactive'}`;
+    }
+    
+    case 'curl': {
+      const url = args.find(a => !a.startsWith('-'));
+      if (!url) return `<span class="tred">curl: no URL specified</span>`;
+      return `<span class="tgray">  % Total    % Received  Time    Time     Current</span>
+<span class="tgray">                          Total   Elapsed  Speed</span>
+100  1234  100  1234    0:00:01  0:00:01   1234
+<span class="tgreen">&lt;!DOCTYPE html&gt;
+&lt;html&gt;&lt;head&gt;&lt;title&gt;${escapeHtml(url)}&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;&lt;h1&gt;Welcome to ${escapeHtml(url)}&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;</span>`;
+    }
+    
+    case 'nano':
+    case 'vim':
+    case 'vi': {
+      const file = args[0] || 'untitled';
+      showAlert('Terminal', `${cmd} editor would open for: ${file}\n\nUse TextEdit app instead.`);
+      return `<span class="tgray">Opening ${cmd}... (not available in web demo)</span>`;
+    }
+    
+    case 'open': {
+      const target = args[0];
+      if (!target) return `<span class="tred">open: missing file argument</span>`;
+      const appMap = { 'safari': 'safari', 'finder': 'finder', 'notes': 'notes', 'calculator': 'calculator', 'music': 'music', 'weather': 'weather', 'calendar': 'calendar', 'photos': 'photos', 'messages': 'messages', 'textedit': 'textedit', 'maps': 'maps', 'terminal': 'terminal', 'settings': 'settings' };
+      const appArg = args.find(a => a.startsWith('-a')) || null;
+      const appName = appArg ? args[args.indexOf(appArg) + 1] : target.replace('.app', '').toLowerCase();
+      if (appMap[appName]) { openApp(appMap[appName]); return `<span class="tgreen">Opening ${appName}...</span>`; }
+      return `<span class="tred">The file /Applications/${escapeHtml(target)} does not exist.</span>`;
+    }
+    
+    case 'pbcopy': return '<span class="tgray">(content copied to clipboard)</span>';
+    case 'pbpaste': return '<span class="tgray">(clipboard content)</span>';
+    case 'say': {
+      const text = args.join(' ') || 'Hello';
+      try {
+        const utter = new SpeechSynthesisUtterance(text);
+        speechSynthesis.speak(utter);
+        return '';
+      } catch(e) {
+        return `<span class="tgreen">🔊 Speaking: "${escapeHtml(text)}"</span>`;
+      }
+    }
+    case 'exit': lockScreen(); return '<span class="tgray">Saving session...completed.</span>';
+    case 'logout': lockScreen(); return '<span class="tgray">Connection closed.</span>';
+    case 'reboot': restartMac(); return '<span class="tgray">System rebooting...</span>';
+    case 'shutdown': sleepMac(); return '<span class="tgray">System going down...</span>';
+    case 'sudo': return `<span class="tyellow">Password:</span>\n<span class="tred">user is not in the sudoers file. This incident will be reported.</span>`;
+    case 'which': return args[0] ? `/usr/bin/${args[0]}` : '';
+    case 'type': return args[0] ? `${args[0]} is /usr/bin/${args[0]}` : '';
+    
+    default:
+      return `<span class="tred">zsh: command not found: ${escapeHtml(cmd)}</span>`;
+  }
+}
+
+function resolvePath(p) {
+  if (p.startsWith('/')) return p.replace(/\/+$/, '') || '/';
+  if (p === '~') return '/Users/user';
+  if (p.startsWith('~/')) return '/Users/user/' + p.substring(2);
+  if (p === '.') return SYS.cwd;
+  if (p === '..') {
+    const parts = SYS.cwd.split('/');
+    parts.pop();
+    return parts.join('/') || '/';
+  }
+  return SYS.cwd + (SYS.cwd.endsWith('/') ? '' : '/') + p;
+}
+
+// ======= SETTINGS =======
+function getSettings(){return `<div class="settingswrap"><div class="sssidebar"><div class="ssitem active" onclick="showSP('general',this)">🌐 General</div><div class="ssitem" onclick="showSP('appearance',this)">🎨 Appearance</div><div class="ssitem" onclick="showSP('desktop',this)">🖥️ Desktop</div><div class="ssitem" onclick="showSP('display',this)">🔆 Displays</div><div class="ssitem" onclick="showSP('wallpaper',this)">🎭 Wallpaper</div><div class="ssitem" onclick="showSP('wifi',this)">📶 Wi-Fi</div><div class="ssitem" onclick="showSP('bluetooth',this)">🔵 Bluetooth</div><div class="ssitem" onclick="showSP('sound',this)">🔊 Sound</div><div class="ssitem" onclick="showSP('battery',this)">🔋 Battery</div><div class="ssitem" onclick="showSP('privacy',this)">🔒 Privacy</div><div class="ssitem" onclick="showSP('about',this)">ℹ️ About</div></div><div class="sc" id="settings-content">${getSP('general')}</div></div>`}
+function getSP(p){const panels={
+  general:`<h2>General</h2><div class="sg"><div class="sr"><span class="sr-label">About This Mac</span><span class="sr-value" style="color:#0a84ff;cursor:pointer" onclick="openApp('about')">macOS 26 →</span></div><div class="sr"><span class="sr-label">Software Update</span><span class="sr-value" style="color:#34c759">Up to date</span></div><div class="sr"><span class="sr-label">Storage</span><span class="sr-value">256 GB of 1 TB</span></div></div>`,
+  appearance:`<h2>Appearance</h2><div class="sg"><div class="sr"><span class="sr-label">Appearance</span><span class="sr-value">Dark</span></div><div class="sr"><span class="sr-label">Accent color</span><span class="sr-value" style="color:#0a84ff">● Blue</span></div></div>`,
+  desktop:`<h2>Desktop & Dock</h2><div class="sg"><div class="sr"><span class="sr-label">Dock size</span><input type="range" min="36" max="72" value="52" style="width:140px"></div><div class="sr"><span class="sr-label">Magnification</span><div class="ptoggle on" onclick="this.classList.toggle('on')"></div></div></div>`,
+  display:`<h2>Displays</h2><div class="sg"><div class="sr"><span class="sr-label">Resolution</span><span class="sr-value">${innerWidth} × ${innerHeight}</span></div><div class="sr"><span class="sr-label">Brightness</span><input type="range" min="20" max="100" value="${SYS.brightness}" style="width:140px" oninput="adjustBrightness(this.value)"></div></div>`,
+  wallpaper:`<h2>Wallpaper</h2><div class="sg"><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">${['linear-gradient(135deg,#0a0a1a,#1a1a3e,#0f2460,#432878,#7a2888,#c23858)','linear-gradient(135deg,#667eea,#764ba2)','linear-gradient(135deg,#f093fb,#f5576c)','linear-gradient(135deg,#4facfe,#00f2fe)','linear-gradient(135deg,#43e97b,#38f9d7)','linear-gradient(135deg,#fa709a,#fee140)','linear-gradient(135deg,#a18cd1,#fbc2eb)','linear-gradient(135deg,#ffecd2,#fcb69f)'].map((bg,i)=>`<div style="width:100%;aspect-ratio:16/10;background:${bg};border-radius:10px;cursor:pointer;border:3px solid ${SYS.wallpaper===bg?'#0a84ff':'transparent'}" onclick="SYS.wallpaper='${bg}';document.getElementById('desktop-wallpaper').style.background='${bg}';showSP('wallpaper')"></div>`).join('')}</div></div>`,
+  wifi:`<h2>Wi-Fi</h2><div class="sg"><div class="sr"><span class="sr-label">Wi-Fi</span><div class="ptoggle ${SYS.wifi.on?'on':''}" onclick="toggleWifiState(this);showSP('wifi')"></div></div><div class="sr"><span class="sr-label">Network</span><span class="sr-value">${SYS.wifi.connected || 'Not connected'} 🔒</span></div></div>`,
+  bluetooth:`<h2>Bluetooth</h2><div class="sg"><div class="sr"><span class="sr-label">Bluetooth</span><div class="ptoggle ${SYS.bluetooth.on?'on':''}" onclick="toggleBtState(this);showSP('bluetooth')"></div></div></div><div class="sg">${Object.keys(SYS.bluetooth.devices).map(d=>`<div class="sr"><span class="sr-label">${d}</span><span class="sr-value" style="color:${SYS.bluetooth.devices[d].connected?'#34c759':'#8e8e93'}">${SYS.bluetooth.devices[d].connected?'Connected':'Not connected'}</span></div>`).join('')}</div>`,
+  sound:`<h2>Sound</h2><div class="sg"><div class="sr"><span class="sr-label">Output volume</span><input type="range" min="0" max="100" value="${SYS.volume}" style="width:140px" oninput="adjustVolume(this.value)"></div></div>`,
+  battery:`<h2>Battery</h2><div class="sg"><div class="sr"><span class="sr-label">Battery Level</span><span class="sr-value">100% — Fully Charged</span></div><div class="sr"><span class="sr-label">Battery Health</span><span class="sr-value">Normal</span></div></div>`,
+  privacy:`<h2>Privacy & Security</h2><div class="sg"><div class="sr"><span class="sr-label">Location Services</span><div class="ptoggle on" onclick="this.classList.toggle('on')"></div></div><div class="sr"><span class="sr-label">FileVault</span><span class="sr-value">On</span></div></div>`,
+  about:`<h2>About</h2><div class="sg"><div class="sr"><span class="sr-label">macOS</span><span class="sr-value">macOS 26 (Sequoia)</span></div><div class="sr"><span class="sr-label">Chip</span><span class="sr-value">Apple M4 Pro</span></div><div class="sr"><span class="sr-label">Memory</span><span class="sr-value">32 GB</span></div><div class="sr"><span class="sr-label">Storage</span><span class="sr-value">1 TB SSD</span></div></div>`,
+};return panels[p]||panels.general}
+function showSP(p,el){const c=document.getElementById('settings-content');if(c)c.innerHTML=getSP(p);if(el){el.closest('.sssidebar').querySelectorAll('.ssitem').forEach(i=>i.classList.remove('active'));el.classList.add('active')}}
+
+// ======= MUSIC =======
+function getMusic(){return `<div class="musicwrap"><div class="msidebar"><h3>Library</h3><div class="msitem">Recently Played</div><div class="msitem">Top Rated</div><h3>Playlists</h3><div class="msitem">Chill Vibes</div><div class="msitem">Focus Mode</div></div><div class="mmain"><h2 style="color:#fff;font-size:19px;font-weight:600;margin-bottom:12px">Recently Played</h2><div style="display:flex;flex-direction:column;gap:2px">${songs.map((s,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 9px;border-radius:8px;cursor:default" onmouseover="this.style.background='rgba(255,255,255,.03)'" onmouseout="this.style.background='transparent'" onclick="playSong(${i})"><div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,${s.c});display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">🎵</div><div style="flex:1;min-width:0"><div style="color:#fff;font-size:12px">${s.title}</div><div style="color:rgba(255,255,255,.35);font-size:10px">${s.artist}</div></div><div style="color:rgba(255,255,255,.25);font-size:10px">${s.dur}</div></div>`).join('')}</div></div><div class="mplayer"><div class="mart" id="music-art" style="background:linear-gradient(135deg,${songs[0].c})"></div><div class="minfo"><div class="mtitle" id="music-title">${songs[0].title}</div><div class="martist" id="music-artist">${songs[0].artist}</div></div><div class="mctrls"><button class="mbtn" onclick="musicPrev()">⏮</button><button class="mbtn play" onclick="toggleMusic()" id="music-play-btn">▶</button><button class="mbtn" onclick="musicNext()">⏭</button></div><div class="mprogress"><input type="range" min="0" max="100" value="0" id="music-pb"></div></div></div>`}
+function toggleMusic(){musicOn=!musicOn;const b=document.getElementById('music-play-btn'),cb=document.getElementById('cc-play-btn');if(b)b.textContent=musicOn?'⏸':'▶';if(cb)cb.textContent=musicOn?'⏸':'▶';if(musicOn){musicInt=setInterval(()=>{musicProg+=.3;if(musicProg>=100)musicNext();const b=document.getElementById('music-pb');if(b)b.value=musicProg},300)}else clearInterval(musicInt);updCCNowPlaying()}
+function playSong(i){clearInterval(musicInt);songIdx=i;const s=songs[i];const t=document.getElementById('music-title'),a=document.getElementById('music-artist'),ar=document.getElementById('music-art');if(t)t.textContent=s.title;if(a)a.textContent=s.artist;if(ar)ar.style.background=`linear-gradient(135deg,${s.c})`;musicProg=0;if(!musicOn)toggleMusic();updCCNowPlaying()}
+function musicNext(){playSong((songIdx+1)%songs.length)}
+function musicPrev(){playSong((songIdx-1+songs.length)%songs.length)}
+function updCCNowPlaying(){const s=songs[songIdx];const t=document.getElementById('cc-np-title'),a=document.getElementById('cc-np-artist'),ar=document.getElementById('cc-np-art');if(t)t.textContent=s.title;if(a)a.textContent=s.artist;if(ar)ar.style.background=`linear-gradient(135deg,${s.c})`}
+
+// ======= OTHER APPS =======
+function getWeather(){return `<div class="weatherwrap"><div class="wcity">San Francisco</div><div class="wtemp">22°</div><div class="wcond">☀️ Mostly Sunny</div><div class="wdetails"><div class="wdetail"><div class="wdetail-label">HIGH/LOW</div><div class="wdetail-value">26°/18°</div></div><div class="wdetail"><div class="wdetail-label">WIND</div><div class="wdetail-value">12 km/h</div></div><div class="wdetail"><div class="wdetail-label">HUMIDITY</div><div class="wdetail-value">45%</div></div></div><div class="wforecast">${['Mon','Tue','Wed','Thu','Fri'].map((d,i)=>`<div class="fcday"><div class="fcname">${d}</div><div style="font-size:22px;margin:3px 0">${['☀️','⛅','🌤️','☀️','🌧️'][i]}</div><div class="fc-temp">${[24,22,25,26,19][i]}°</div></div>`).join('')}</div></div>`}
+function getCal(){const n=new Date(),fd=new Date(calYear,calMonth,1).getDay(),dim=new Date(calYear,calMonth+1,0).getDate(),dip=new Date(calYear,calMonth,0).getDate();const mn=new Date(calYear,calMonth).toLocaleString('default',{month:'long'});let days='';for(let i=fd-1;i>=0;i--)days+=`<div class="calday other">${dip-i}</div>`;for(let d=1;d<=dim;d++){const td=d===n.getDate()&&calMonth===n.getMonth()&&calYear===n.getFullYear();days+=`<div class="calday ${td?'today':''}">${d}</div>`}const rem=42-(fd+dim);for(let d=1;d<=rem;d++)days+=`<div class="calday other">${d}</div>`;return `<div class="calwrap"><div class="calhdr"><h2>${mn} ${calYear}</h2><div class="calnav"><button onclick="calNav(-1)">◀</button><button onclick="calNav(1)">▶</button></div></div><div class="calgrid"><div class="calday-hdr">Su</div><div class="calday-hdr">Mo</div><div class="calday-hdr">Tu</div><div class="calday-hdr">We</div><div class="calday-hdr">Th</div><div class="calday-hdr">Fr</div><div class="calday-hdr">Sa</div>${days}</div></div>`}
+function calNav(d){calMonth+=d;if(calMonth>11){calMonth=0;calYear++}if(calMonth<0){calMonth=11;calYear--}const wb=document.querySelector('.window.focused .wbody')||document.querySelector('.window .wbody');if(wb)wb.innerHTML=getCal()}
+function getPhotos(){const colors=['#667eea','#764ba2','#f093fb','#f5576c','#4facfe','#00f2fe','#43e97b','#38f9d7','#fa709a','#fee140','#a18cd1','#fbc2eb','#ff9a9e','#fad0c4','#ffecd2','#fcb69f'];return `<div class="photoswrap"><h2 style="color:#fff;font-size:19px;font-weight:600;margin-bottom:12px">All Photos</h2><div class="photosgrid">${colors.map(c=>`<img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='${encodeURIComponent(c)}'/%3E%3Ctext x='50' y='60' text-anchor='middle' fill='white' font-size='28'%3E🏞%3C/text%3E%3C/svg%3E" onclick="viewPhoto(this.src)">`).join('')}</div></div>`}
+function viewPhoto(src){document.getElementById('photo-viewer-img').src=src;document.getElementById('photo-viewer').classList.add('show')}
+function closePhotoViewer(){document.getElementById('photo-viewer').classList.remove('show')}
+function getMsgs(){return `<div class="msgswrap"><div class="msgssidebar"><div class="msgssearch"><input placeholder="Search" oninput="filterMsgs(this.value)"></div><div class="msgslist" id="msgs-list">${renderMsgList()}</div></div><div style="flex:1;display:flex;flex-direction:column"><div class="mchat-hdr">${threads[activeThread].name}</div><div class="mmsgs" id="msg-msgs">${threads[activeThread].msgs.map(m=>`<div class="mbubble ${m.s?'sent':'recv'}">${m.t}</div>`).join('')}</div><div class="minputarea"><input id="msg-input" placeholder="iMessage" onkeydown="if(event.key==='Enter')sendMsg()"><button class="msend" onclick="sendMsg()">↑</button></div></div></div>`}
+function renderMsgList(f=''){return threads.map((t,i)=>{if(f&&!t.name.toLowerCase().includes(f.toLowerCase()))return'';const lm=t.msgs[t.msgs.length-1];return`<div class="msthread ${i===activeThread?'active':''}" onclick="selThread(${i})"><div class="msavatar" style="background:linear-gradient(135deg,${t.c})">${t.av}</div><div class="msinfo"><div class="msname">${t.name}</div><div class="msprev">${lm.s?'You: ':''}${lm.t}</div></div></div>`}).join('')}
+function selThread(i){activeThread=i;const h=document.querySelector('.mchat-hdr'),m=document.getElementById('msg-msgs'),l=document.getElementById('msgs-list');if(h)h.textContent=threads[i].name;if(m){m.innerHTML=threads[i].msgs.map(x=>`<div class="mbubble ${x.s?'sent':'recv'}">${x.t}</div>`).join('');m.scrollTop=m.scrollHeight}if(l)l.innerHTML=renderMsgList()}
+function filterMsgs(q){const l=document.getElementById('msgs-list');if(l)l.innerHTML=renderMsgList(q)}
+function sendMsg(){const inp=document.getElementById('msg-input'),m=document.getElementById('msg-msgs');if(!inp||!m||!inp.value.trim())return;const t=inp.value.trim();inp.value='';threads[activeThread].msgs.push({t,s:true});const b=document.createElement('div');b.className='mbubble sent';b.textContent=t;m.appendChild(b);m.scrollTop=m.scrollHeight;const l=document.getElementById('msgs-list');if(l)l.innerHTML=renderMsgList();setTimeout(()=>{const replies=['That sounds great! 👍','Haha, nice!','Sure!','Ok','I agree!'];const r=replies[Math.floor(Math.random()*replies.length)];threads[activeThread].msgs.push({t:r,s:false});const rb=document.createElement('div');rb.className='mbubble recv';rb.textContent=r;m.appendChild(rb);m.scrollTop=m.scrollHeight;if(l)l.innerHTML=renderMsgList()},800+Math.random()*1200)}
+function getTextEdit(){return `<div class="tewrap"><div class="tetoolbar"><button onclick="teFmt('bold')"><b>B</b></button><button onclick="teFmt('italic')"><i>I</i></button><button onclick="teFmt('underline')"><u>U</u></button></div><div class="tecontent"><textarea id="te-area">Welcome to TextEdit on macOS 26.
+
+Start typing to create your document!</textarea></div></div>`}
+function teFmt(cmd){const ta=document.getElementById('te-area');if(!ta)return;const s=ta.selectionStart,e=ta.selectionEnd,t=ta.value.substring(s,e);let w=cmd==='bold'?`**${t}**`:cmd==='italic'?`_${t}_`:`__${t}__`;ta.value=ta.value.substring(0,s)+w+ta.value.substring(e);ta.focus()}
+function getMaps(){return `<div class="mapswrap"><div class="mapssearch"><input placeholder="Search Maps" onkeydown="if(event.key==='Enter')searchMap(this.value)"></div><canvas class="maps-canvas" id="maps-canvas"></canvas></div>`}
+function searchMap(q){if(q)showAlert('Maps',`Searching: ${q}`)}
+function renderMap(){const c=document.getElementById('maps-canvas');if(!c)return;c.width=c.offsetWidth||750;c.height=c.offsetHeight||500;const x=c.getContext('2d');x.fillStyle='#1a2332';x.fillRect(0,0,c.width,c.height);x.strokeStyle='#2a3a4a';x.lineWidth=1;for(let i=0;i<c.width;i+=40){x.beginPath();x.moveTo(i,0);x.lineTo(i,c.height);x.stroke()}for(let i=0;i<c.height;i+=40){x.beginPath();x.moveTo(0,i);x.lineTo(c.width,i);x.stroke()}x.strokeStyle='#3a4a5a';x.lineWidth=3;x.beginPath();x.moveTo(0,c.height*.4);x.lineTo(c.width,c.height*.4);x.stroke();x.beginPath();x.moveTo(c.width*.3,0);x.lineTo(c.width*.3,c.height);x.stroke();x.fillStyle='#1a3050';x.beginPath();x.ellipse(c.width*.8,c.height*.6,80,50,0,0,Math.PI*2);x.fill();x.fillStyle='#1a3a2a';x.beginPath();x.arc(c.width*.2,c.height*.3,40,0,Math.PI*2);x.fill();x.fillStyle='#ff453a';x.beginPath();x.arc(c.width*.5,c.height*.45,8,0,Math.PI*2);x.fill();x.fillStyle='#fff';x.beginPath();x.arc(c.width*.5,c.height*.45,3,0,Math.PI*2);x.fill()}
+function getAbout(){return `<div class="aboutwrap"><div class="about-logo">💻</div><div class="about-title">macOS 26</div><div class="about-ver">Sequoia</div><div class="about-info"><div class="arow"><span class="arow-label">Chip</span><span class="arow-value">Apple M4 Pro</span></div><div class="arow"><span class="arow-label">Memory</span><span class="arow-value">32 GB</span></div><div class="arow"><span class="arow-label">Startup Disk</span><span class="arow-value">Macintosh HD</span></div><div class="arow"><span class="arow-label">Display</span><span class="arow-value">${innerWidth} × ${innerHeight}</span></div><div class="arow"><span class="arow-label">Storage</span><span class="arow-value">1 TB SSD</span></div></div></div>`}
+
+function showAlert(title,msg){document.getElementById('alert-title').textContent=title;document.getElementById('alert-msg').textContent=msg;document.getElementById('alert-modal').classList.add('show')}
+function closeAlert(e){if(e.target.id==='alert-modal')closeAlertModal()}
+function closeAlertModal(){document.getElementById('alert-modal').classList.remove('show')}
+
+document.getElementById('desktop-wallpaper').style.background=SYS.wallpaper;
+updateStatusBar();
+updateBtDeviceUI();
+setTimeout(()=>{renderMap();openApp('finder');openApp('safari')},500);
+window.addEventListener('resize',()=>setTimeout(renderMap,100));
+</script>
+</body>
+</html>
